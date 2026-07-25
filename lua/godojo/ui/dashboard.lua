@@ -43,7 +43,7 @@ local function get_ascii_dashboard(stats, engine_status, active_chapter)
     "  ---------------",
   }
 
-  if stats.weak_patterns and #stats.weak_patterns > 0 then
+  if stats.weak_patterns and type(stats.weak_patterns) == "table" and #stats.weak_patterns > 0 then
     for _, pat in ipairs(stats.weak_patterns) do
       table.insert(lines, "  • " .. pat)
     end
