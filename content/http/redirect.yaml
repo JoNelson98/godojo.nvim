@@ -1,0 +1,55 @@
+id: http.redirect.001
+title: Redirect HTTP Request
+chapter: http
+pattern_id: http.redirect
+difficulty: 2
+type: full_recall
+prompt: |
+    Use `http.Redirect` to redirect the user to "/welcome" with a temporary redirect status code `http.StatusFound` (302).
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    func redirectHandler(w http.ResponseWriter, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestRedirectHandler
+    ast_rules: []
+feedback:
+    wrong_redirect: |
+        Call `http.Redirect` passing the response writer, the request, the path "/welcome", and `http.StatusFound`.
+hints:
+    - "Use `http.Redirect(w, r, urlStr, code)` to write the helper."
+explanation: |
+    `http.Redirect` replies to the request with a redirect to the specified URL, which can be path-relative. It sets the Location header and status code.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestRedirectHandler(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        redirectHandler(rec, req)
+
+        if rec.Code != http.StatusFound {
+            t.Errorf("expected status 302, got %d", rec.Code)
+        }
+        got := rec.Header().Get("Location")
+        if got != "/welcome" {
+            t.Errorf("expected Location '/welcome', got %q", got)
+        }
+    }

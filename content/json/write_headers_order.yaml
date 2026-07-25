@@ -1,0 +1,70 @@
+id: json.write_headers_order.001
+title: HTTP Header Ordering before WriteHeader
+chapter: json
+pattern_id: json.write_headers_order
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Implement `writeCreatedJSON` to send a JSON response with status code `201 Created`.
+  Ensure you set the `Content-Type` header to `application/json` BEFORE calling `w.WriteHeader` or writing the body.
+  Encode the `data` map using `json.NewEncoder`.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http"
+  )
+
+  func writeCreatedJSON(w http.ResponseWriter, data map[string]string) {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestWriteCreatedJSON_CorrectOrder
+  ast_rules:
+    - uses_json_new_encoder
+
+feedback:
+  wrong_header_order: |
+    Headers must be set BEFORE calling `w.WriteHeader`. Once `w.WriteHeader` is called, modifying headers has no effect.
+
+hints:
+  - "First, call `w.Header().Set(\"Content-Type\", \"application/json\")`."
+  - "Second, call `w.WriteHeader(http.StatusCreated)`."
+  - "Finally, instantiate `json.NewEncoder(w)` and encode the data map."
+
+explanation: |
+  In Go's `http.ResponseWriter`, the first call to `w.Write` or `w.WriteHeader` flushes the response headers to the client.
+  Any header modifications made after that point are ignored.
+
+test_code: |
+  package challenge
+
+  import (
+      "net/http"
+      "net/http/httptest"
+      "testing"
+  )
+
+  func TestWriteCreatedJSON_CorrectOrder(t *testing.T) {
+      rec := httptest.NewRecorder()
+      data := map[string]string{"status": "created"}
+      writeCreatedJSON(rec, data)
+
+      ct := rec.Header().Get("Content-Type")
+      if ct != "application/json" {
+          t.Errorf("expected Content-Type application/json, got %q (did you write the status code or body before setting headers?)", ct)
+      }
+
+      if rec.Code != http.StatusCreated {
+          t.Errorf("expected status 201, got %d", rec.Code)
+      }
+  }

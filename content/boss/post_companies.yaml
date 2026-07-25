@@ -1,0 +1,127 @@
+id: boss.post_companies.001
+title: POST /companies Boss Mission
+chapter: boss
+pattern_id: boss.post_companies
+difficulty: 5
+type: full_recall
+prompt: |
+    Combine your net/http handlers, JSON serialization, and unit testing knowledge into a final Boss Mission.
+
+    Requirements:
+    1. Build a Handler: `HandleCreateCompany` that serves `POST /companies`.
+       - Accept JSON with a `name` field (mapped to `CreateCompanyRequest`).
+       - Reject malformed JSON with HTTP status code `400 Bad Request`.
+       - Return HTTP status code `201 Created` on success.
+       - Respond with JSON containing the company name (mapped to `CreateCompanyResponse`).
+       - Set the `Content-Type` header to `application/json`.
+    2. Write Handler Tests: Complete `TestHandleCreateCompany_Valid` and `TestHandleCreateCompany_Invalid`.
+       - Use `httptest.NewRecorder` and `httptest.NewRequest`.
+       - Test that a valid request returns status 201 and correct name.
+       - Test that an invalid request returns status 400.
+starter: |
+    package challenge
+
+    import (
+        "encoding/json"
+        "net/http"
+        "net/http/httptest"
+        "strings"
+        "testing"
+    )
+
+    type CreateCompanyRequest struct {
+        Name string `json:"name"`
+    }
+
+    type CreateCompanyResponse struct {
+        Name string `json:"name"`
+    }
+
+    // godojo:start
+    // HandleCreateCompany serves POST /companies.
+    func HandleCreateCompany(w http.ResponseWriter, r *http.Request) {
+        // Decode the body request into CreateCompanyRequest.
+        // Set the content-type to application/json.
+        // Write the 201 status code header.
+        // Encode the Response body.
+    }
+
+    // TestHandleCreateCompany_Valid tests successful POST requests.
+    func TestHandleCreateCompany_Valid(t *testing.T) {
+        // Simulate POST /companies with valid payload using httptest.
+    }
+
+    // TestHandleCreateCompany_Invalid tests malformed JSON body requests.
+    func TestHandleCreateCompany_Invalid(t *testing.T) {
+        // Simulate POST /companies with invalid payload using httptest.
+    }
+    // godojo:end
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestBossHandleCreateCompany_Valid
+        - TestBossHandleCreateCompany_Invalid
+    ast_rules:
+        - uses_json_new_decoder
+        - uses_json_new_encoder
+        - decode_receives_address
+        - declares_handler_tests
+hints:
+    - Decode `r.Body` using `json.NewDecoder(r.Body).Decode(&input)` and return `http.Error` with `400` status on error.
+    - Set headers via `w.Header().Set("Content-Type", "application/json")` BEFORE calling `w.WriteHeader(201)`.
+    - Inside tests, invoke the handler directly using `HandleCreateCompany(rec, req)`.
+explanation: |
+    This Boss Challenge brings together all the fundamental blocks of professional Go web development:
+    1. Stream parsing payloads from incoming network bodies.
+    2. Validating correctness and translating errors to HTTP standards.
+    3. Configuring appropriate REST content negotiation response headers.
+    4. Serializing structural results.
+    5. Writing clean, fast, isolated unit tests without spinning up a live network server.
+test_code: |
+    package challenge
+
+    import (
+        "encoding/json"
+        "net/http"
+        "net/http/httptest"
+        "strings"
+        "testing"
+    )
+
+    func TestBossHandleCreateCompany_Valid(t *testing.T) {
+        req := httptest.NewRequest("POST", "/companies", strings.NewReader(`{"name":"Acme Space"}`))
+        rec := httptest.NewRecorder()
+
+        HandleCreateCompany(rec, req)
+
+        if rec.Code != http.StatusCreated {
+            t.Fatalf("expected status 201 Created, got %d", rec.Code)
+        }
+
+        ct := rec.Header().Get("Content-Type")
+        if !strings.Contains(ct, "application/json") {
+            t.Errorf("expected Content-Type application/json, got %q", ct)
+        }
+
+        var resp CreateCompanyResponse
+        err := json.NewDecoder(rec.Body).Decode(&resp)
+        if err != nil {
+            t.Fatalf("failed to decode response JSON: %v", err)
+        }
+
+        if resp.Name != "Acme Space" {
+            t.Errorf("expected company name 'Acme Space', got %q", resp.Name)
+        }
+    }
+
+    func TestBossHandleCreateCompany_Invalid(t *testing.T) {
+        req := httptest.NewRequest("POST", "/companies", strings.NewReader(`{invalid payload`))
+        rec := httptest.NewRecorder()
+
+        HandleCreateCompany(rec, req)
+
+        if rec.Code != http.StatusBadRequest {
+            t.Errorf("expected status 400 Bad Request, got %d", rec.Code)
+        }
+    }

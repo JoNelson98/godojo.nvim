@@ -1,0 +1,43 @@
+id: variable-sliding-window
+name: Variable Sliding Window
+chapter: sliding-window
+solves: |
+  Longest or shortest subarrays/substrings matching a criteria.
+clues:
+  - Works with a contiguous section of an array or string.
+  - Asks for the longest, shortest, largest, or smallest valid range.
+  - Elements enter and leave the current range.
+invariant: |
+  The active window must remain valid under the problem's rules.
+skeleton: |
+  // Generic Template: Variable Sliding Window in Go
+  func variableWindowTemplate(items []int) int {
+      left := 0
+      maxLen := 0
+
+      for right := 0; right < len(items); right++ {
+          // 1. Process element entering the window at 'right'
+          // add(items[right])
+
+          // 2. Shrink window from the left while the current state is invalid
+          for windowIsInvalid() {
+              // remove(items[left])
+              left++
+          }
+
+          // 3. Update global answer with current valid window size [left, right]
+          currentLen := right - left + 1
+          if currentLen > maxLen {
+              maxLen = currentLen
+          }
+      }
+      return maxLen
+  }
+time_complexity: O(n)
+space_complexity: O(k)
+mistakes:
+  - Shrinking the window only once instead of using a loop.
+  - Updating the result before restoring validity.
+  - Forgetting to remove stale frequency-map entries.
+related:
+  - fixed-sliding-window

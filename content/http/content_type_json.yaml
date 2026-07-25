@@ -1,0 +1,51 @@
+id: http.content_type_json.001
+title: Set Content-Type JSON Header
+chapter: http
+pattern_id: http.content_type_json
+difficulty: 2
+type: full_recall
+prompt: |
+  Set the "Content-Type" header of the response to "application/json" before writing any headers or content.
+starter: |
+  package challenge
+
+  import (
+      "net/http"
+  )
+
+  func jsonHeaderHandler(w http.ResponseWriter, r *http.Request) {
+      // godojo:start
+      // Set the "Content-Type" header to "application/json" here.
+      // godojo:end
+  }
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestJsonHeaderHandler
+  ast_rules: []
+feedback:
+  missing_header: |
+    Use `w.Header().Set("Content-Type", "application/json")` to configure the JSON response header.
+hints:
+  - You can access the header map via `w.Header()` and set the `"Content-Type"` key to `"application/json"`.
+explanation: |
+  Before writing the response body or calling `WriteHeader`, you must set any custom headers. Setting `"Content-Type"` to `"application/json"` lets the client know the response format is JSON.
+test_code: |
+  package challenge
+
+  import (
+      "net/http/httptest"
+      "testing"
+  )
+
+  func TestJsonHeaderHandler(t *testing.T) {
+      rec := httptest.NewRecorder()
+      req := httptest.NewRequest("GET", "/", nil)
+      jsonHeaderHandler(rec, req)
+
+      got := rec.Header().Get("Content-Type")
+      if got != "application/json" {
+          t.Errorf("expected Content-Type 'application/json', got %q", got)
+      }
+  }

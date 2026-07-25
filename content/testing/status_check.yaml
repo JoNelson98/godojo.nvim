@@ -1,0 +1,53 @@
+id: httptest.status_check.001
+title: Assert status code in test
+chapter: testing
+pattern_id: httptest.status_check
+difficulty: 1
+type: full_recall
+prompt: |
+    Verify if the response status matches the expected code, returning true if they match, else false.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    func assertStatus(res *http.Response, expected int) bool {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestAssertStatus
+    ast_rules:
+        - checks_status_code
+hints:
+    - Compare `res.StatusCode` with the `expected` integer value.
+explanation: |
+    Testing handler behaviors always begins by asserting that the returned status code matches
+    expectations (such as http.StatusOK or http.StatusCreated).
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "testing"
+    )
+
+    func TestAssertStatus(t *testing.T) {
+        res := &http.Response{
+            StatusCode: 201,
+        }
+
+        if !assertStatus(res, 201) {
+            t.Error("expected assertStatus(201, 201) to return true")
+        }
+
+        if assertStatus(res, 200) {
+            t.Error("expected assertStatus(201, 200) to return false")
+        }
+    }

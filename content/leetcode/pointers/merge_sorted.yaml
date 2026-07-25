@@ -1,0 +1,68 @@
+id: leetcode.merge_sorted.001
+title: Merge Sorted Arrays
+chapter: pointers
+pattern_id: two-pointers
+difficulty: 2
+type: full_recall
+role: lesson
+primary_pattern: two-pointers
+
+prompt: |
+  You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order.
+  `nums1` has a size of `m + n` where the first `m` elements denote elements that should be merged, and the last `n` elements are set to `0` and should be ignored.
+  Merge `nums2` into `nums1` as a single sorted array in-place.
+
+  Example:
+  Input: `nums1 = [1, 2, 3, 0, 0, 0]`, `m = 3`, `nums2 = [2, 5, 6]`, `n = 3`
+  Output: `nums1 = [1, 2, 2, 3, 5, 6]` (nums1 is mutated in-place)
+
+starter: |
+  package challenge
+
+  func merge(nums1 []int, m int, nums2 []int, n int) {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestMergeSorted_Visible
+    - TestMergeSorted_Hidden
+
+hints:
+  - "Start filling `nums1` from the **back** (index `m + n - 1`) to avoid overwriting existing values."
+  - "Keep three pointers: `p1 = m - 1` (end of valid nums1), `p2 = n - 1` (end of nums2), and `p = m + n - 1` (end of full nums1 buffer)."
+
+explanation: |
+  Merging from the back with Two Pointers leverages the empty buffer space in `nums1`,
+  accomplishing sorted merging in O(m + n) time and O(1) auxiliary space.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestMergeSorted_Visible(t *testing.T) {
+      nums1 := []int{1, 2, 3, 0, 0, 0}
+      merge(nums1, 3, []int{2, 5, 6}, 3)
+
+      expected := []int{1, 2, 2, 3, 5, 6}
+      for i, v := range expected {
+          if nums1[i] != v {
+              t.Fatalf("expected merged array %v, got %v", expected, nums1)
+          }
+      }
+  }
+
+  func TestMergeSorted_Hidden(t *testing.T) {
+      nums1 := []int{1, 0}
+      merge(nums1, 1, []int{2}, 1)
+      if nums1[0] != 1 || nums1[1] != 2 {
+          t.Errorf("expected [1, 2], got %v", nums1)
+      }
+  }

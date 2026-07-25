@@ -1,0 +1,57 @@
+id: httptest.json_check.001
+title: Decode JSON response in tests
+chapter: testing
+pattern_id: httptest.json_check
+difficulty: 3
+type: full_recall
+prompt: |
+    Read and decode the response body JSON bytes into the provided target string pointer destination.
+starter: |
+    package challenge
+
+    import (
+        "encoding/json"
+        "net/http"
+    )
+
+    func decodeTestResponse(res *http.Response, dest *string) error {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestDecodeTestResponse
+    ast_rules:
+        - uses_json_new_decoder
+hints:
+    - Call `json.NewDecoder` with `res.Body` and invoke `.Decode` passing `dest`.
+explanation: |
+    Validating API responses requires parsing JSON text back into concrete types inside tests.
+    `json.NewDecoder` parses the incoming response body stream dynamically.
+test_code: |
+    package challenge
+
+    import (
+        "bytes"
+        "io"
+        "net/http"
+        "testing"
+    )
+
+    func TestDecodeTestResponse(t *testing.T) {
+        res := &http.Response{
+            Body: io.NopCloser(bytes.NewReader([]byte(`"Acme"`))),
+        }
+
+        var name string
+        err := decodeTestResponse(res, &name)
+        if err != nil {
+            t.Fatalf("unexpected error: %v", err)
+        }
+        if name != "Acme" {
+            t.Errorf("expected Acme, got %q", name)
+        }
+    }

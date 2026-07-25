@@ -1,0 +1,82 @@
+id: json.decode_pointer.001
+title: Enforce Pointer Receiver for Decoding
+chapter: json
+pattern_id: json.decode_pointer
+difficulty: 3
+type: full_recall
+
+prompt: |
+  Implement a method `UpdateFromJSON(r io.Reader) error` on the `Config` struct.
+  The method should decode the JSON from the reader directly into the receiver instance.
+  Ensure the changes persist by using a pointer receiver and passing the receiver to the decoder.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "io"
+  )
+
+  type Config struct {
+      Host string `json:"host"`
+      Port int    `json:"port"`
+  }
+
+  // godojo:start
+  // Define the UpdateFromJSON method on Config here.
+  // godojo:end
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestUpdateFromJSON_Valid
+    - TestUpdateFromJSON_PointerReceiver
+  ast_rules:
+    - pointer_receiver
+    - uses_json_new_decoder
+
+feedback:
+  missing_pointer_receiver: |
+    To modify the original struct's fields, the method receiver must be a pointer (e.g., `(c *Config)`).
+  wrong_decode: |
+    Decode JSON into the receiver instance (e.g., `c`).
+
+hints:
+  - "Define the method as `func (c *Config) UpdateFromJSON(r io.Reader) error`."
+  - "Use `json.NewDecoder(r).Decode(c)` to decode directly into the receiver."
+
+explanation: |
+  In Go, methods can have value or pointer receivers.
+  A pointer receiver `*Config` allows the method to mutate the caller's fields.
+  Since `Decode` expects a pointer, passing `c` (which is already a pointer) works perfectly.
+
+test_code: |
+  package challenge
+
+  import (
+      "strings"
+      "testing"
+  )
+
+  func TestUpdateFromJSON_Valid(t *testing.T) {
+      cfg := &Config{Host: "localhost", Port: 8080}
+      input := `{"host":"127.0.0.1","port":9000}`
+      err := cfg.UpdateFromJSON(strings.NewReader(input))
+      if err != nil {
+          t.Fatalf("unexpected error: %v", err)
+      }
+      if cfg.Host != "127.0.0.1" || cfg.Port != 9000 {
+          t.Errorf("expected host 127.0.0.1 and port 9000, got %s:%d", cfg.Host, cfg.Port)
+      }
+  }
+
+  func TestUpdateFromJSON_PointerReceiver(t *testing.T) {
+      // This test ensures we can modify a local instance
+      var cfg Config
+      _ = cfg.UpdateFromJSON(strings.NewReader(`{"host":"example.com","port":443}`))
+      if cfg.Host != "example.com" || cfg.Port != 443 {
+          t.Error("method must use pointer receiver to persist modifications to the struct")
+      }
+  }

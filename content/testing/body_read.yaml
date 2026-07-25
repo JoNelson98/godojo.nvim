@@ -1,0 +1,56 @@
+id: httptest.body_read.001
+title: Read response body
+chapter: testing
+pattern_id: httptest.body_read
+difficulty: 2
+type: full_recall
+prompt: |
+    Read all bytes from the response body and return them as a string.
+starter: |
+    package challenge
+
+    import (
+        "io"
+        "net/http"
+    )
+
+    func readBodyString(res *http.Response) (string, error) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestReadBodyString
+    ast_rules:
+        - uses_io_read_all
+hints:
+    - Use `io.ReadAll` passing `res.Body` to extract the full stream content.
+explanation: |
+    HTTP responses are transmitted as chunked streams. To inspect their text representation in tests,
+    you must read the bytes fully from `io.Reader` using standard helper tools like `io.ReadAll`.
+test_code: |
+    package challenge
+
+    import (
+        "bytes"
+        "io"
+        "net/http"
+        "testing"
+    )
+
+    func TestReadBodyString(t *testing.T) {
+        res := &http.Response{
+            Body: io.NopCloser(bytes.NewReader([]byte("Acme Corp"))),
+        }
+
+        str, err := readBodyString(res)
+        if err != nil {
+            t.Fatalf("unexpected error: %v", err)
+        }
+        if str != "Acme Corp" {
+            t.Errorf("expected Acme Corp, got %q", str)
+        }
+    }

@@ -1,0 +1,62 @@
+id: httptest.post_request.001
+title: Create a POST request with payload
+chapter: testing
+pattern_id: httptest.post_request
+difficulty: 3
+type: full_recall
+prompt: |
+    Create a new POST request to target url `/companies` containing the JSON string payload `{"name":"Acme"}`.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "strings"
+    )
+
+    func createPostRequest() *http.Request {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestCreatePostRequest
+    ast_rules:
+        - uses_httptest_new_request
+hints:
+    - Use `httptest.NewRequest` specifying method `"POST"`, url `"/companies"`, and wrap the payload using `strings.NewReader`.
+explanation: |
+    `httptest.NewRequest` simplifies simulating complex input triggers, automatically creating
+    the request payload stream and binding standard parameters.
+test_code: |
+    package challenge
+
+    import (
+        "io"
+        "testing"
+    )
+
+    func TestCreatePostRequest(t *testing.T) {
+        req := createPostRequest()
+        if req == nil {
+            t.Fatal("expected non-nil request")
+        }
+        if req.Method != "POST" {
+            t.Errorf("expected POST method, got %q", req.Method)
+        }
+        if req.URL.Path != "/companies" {
+            t.Errorf("expected path /companies, got %q", req.URL.Path)
+        }
+
+        body, err := io.ReadAll(req.Body)
+        if err != nil {
+            t.Fatalf("unexpected error reading body: %v", err)
+        }
+        if string(body) != `{"name":"Acme"}` {
+            t.Errorf("expected body payload `{\"name\":\"Acme\"}`, got %q", string(body))
+        }
+    }

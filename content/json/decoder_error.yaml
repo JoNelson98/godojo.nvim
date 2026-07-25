@@ -1,0 +1,86 @@
+id: json.decoder_error.001
+title: HTTP 400 on Decode Failure
+chapter: json
+pattern_id: json.decoder_error
+difficulty: 3
+type: full_recall
+
+prompt: |
+  Implement the `createProductHandler` HTTP handler. It should decode the request body into a `Product` struct.
+  If decoding fails, write a `http.StatusBadRequest` (400) status header and return.
+  If decoding succeeds, write a `http.StatusOK` (200) status header.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http"
+  )
+
+  type Product struct {
+      ID   string `json:"id"`
+      Name string `json:"name"`
+  }
+
+  func createProductHandler(w http.ResponseWriter, r *http.Request) {
+      var p Product
+
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestCreateProductHandler_Success
+    - TestCreateProductHandler_Failure
+  ast_rules:
+    - uses_json_new_decoder
+
+feedback:
+  missing_status_400: |
+    Ensure you call `w.WriteHeader(http.StatusBadRequest)` if decoding fails.
+  missing_status_200: |
+    Ensure you call `w.WriteHeader(http.StatusOK)` if decoding succeeds.
+
+hints:
+  - "Check the error returned by `json.NewDecoder(r.Body).Decode(&p)`."
+  - "If `err != nil`, call `w.WriteHeader(http.StatusBadRequest)` and return immediately."
+  - "If successful, call `w.WriteHeader(http.StatusOK)`."
+
+explanation: |
+  Validating and handling parsing errors when consuming external HTTP requests is crucial.
+  Returning a 400 Bad Request informs clients that their JSON payload is malformed.
+
+test_code: |
+  package challenge
+
+  import (
+      "net/http"
+      "net/http/httptest"
+      "strings"
+      "testing"
+  )
+
+  func TestCreateProductHandler_Success(t *testing.T) {
+      rec := httptest.NewRecorder()
+      req := httptest.NewRequest("POST", "/", strings.NewReader(`{"id":"p123","name":"Gizmo"}`))
+      createProductHandler(rec, req)
+
+      if rec.Code != http.StatusOK {
+          t.Errorf("expected status 200, got %d", rec.Code)
+      }
+  }
+
+  func TestCreateProductHandler_Failure(t *testing.T) {
+      rec := httptest.NewRecorder()
+      req := httptest.NewRequest("POST", "/", strings.NewReader(`{invalid`))
+      createProductHandler(rec, req)
+
+      if rec.Code != http.StatusBadRequest {
+          t.Errorf("expected status 400 on decoding failure, got %d", rec.Code)
+      }
+  }

@@ -1,0 +1,86 @@
+id: leetcode.max_sum_subarray.001
+title: Maximum Sum Subarray of Size K
+chapter: window
+pattern_id: fixed-sliding-window
+difficulty: 1
+type: full_recall
+role: lesson
+primary_pattern: fixed-sliding-window
+
+prompt: |
+  Given an array of positive integers `nums` and a positive integer `k`, find the maximum sum of any contiguous subarray of size `k`.
+
+  Example:
+  Input: `nums = [2, 1, 5, 1, 3, 2]`, `k = 3`
+  Output: `9`
+  Explanation: Subarray `[5, 1, 3]` has the maximum sum of `9`.
+
+starter: |
+  package challenge
+
+  func maxSubarraySum(nums []int, k int) int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return 0
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestMaxSubarraySum_Visible
+    - TestMaxSubarraySum_Hidden
+
+hints:
+  - First, compute the sum of the first `k` elements.
+  - Then, slide the window by adding the next element and subtracting the element that left the window.
+
+explanation: |
+  The fixed sliding window pattern keeps a constant window size `k`.
+  As the window moves to the right, we do not need to recompute the entire sum of `k` elements;
+  we simply add the new element entering the window and subtract the old element exiting the window in O(1) time.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestMaxSubarraySum_Visible(t *testing.T) {
+      tests := []struct {
+          nums []int
+          k    int
+          want int
+      }{
+          {nums: []int{2, 1, 5, 1, 3, 2}, k: 3, want: 9},
+          {nums: []int{2, 3, 4, 1, 5}, k: 2, want: 7},
+      }
+
+      for _, tt := range tests {
+          got := maxSubarraySum(tt.nums, tt.k)
+          if got != tt.want {
+              t.Errorf("maxSubarraySum(%v, %d) = %d, want %d", tt.nums, tt.k, got, tt.want)
+          }
+      }
+  }
+
+  func TestMaxSubarraySum_Hidden(t *testing.T) {
+      tests := []struct {
+          nums []int
+          k    int
+          want int
+      }{
+          {nums: []int{1, 2}, k: 1, want: 2},
+          {nums: []int{1, 2, 3, 4, 5}, k: 5, want: 15},
+          {nums: []int{}, k: 2, want: 0},
+      }
+
+      for _, tt := range tests {
+          got := maxSubarraySum(tt.nums, tt.k)
+          if got != tt.want {
+              t.Errorf("maxSubarraySum(%v, %d) = %d, want %d", tt.nums, tt.k, got, tt.want)
+          }
+      }
+  }

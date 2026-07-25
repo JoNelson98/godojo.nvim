@@ -1,0 +1,56 @@
+id: http.error.001
+title: Send HTTP Error
+chapter: http
+pattern_id: http.error
+difficulty: 2
+type: full_recall
+prompt: |
+    Use `http.Error` to send a "Bad Request" text error back to the client with the status code `http.StatusBadRequest` (400).
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    func errorHandler(w http.ResponseWriter, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestErrorHandler
+    ast_rules: []
+feedback:
+    wrong_error_call: |
+        Make sure you call `http.Error` passing the response writer, the message string "Bad Request", and `http.StatusBadRequest`.
+hints:
+    - "Use `http.Error(w, errorString, statusCode)` to write the helper."
+explanation: |
+    `http.Error` is a helper that sets the content type to `text/plain; charset=utf-8`, writes the specified header, and writes the given error string followed by a newline.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "strings"
+        "testing"
+    )
+
+    func TestErrorHandler(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        errorHandler(rec, req)
+
+        if rec.Code != http.StatusBadRequest {
+            t.Errorf("expected status %d, got %d", http.StatusBadRequest, rec.Code)
+        }
+        body := strings.TrimSpace(rec.Body.String())
+        if body != "Bad Request" {
+            t.Errorf("expected body 'Bad Request', got %q", body)
+        }
+    }

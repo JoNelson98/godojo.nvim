@@ -1,0 +1,84 @@
+id: leetcode.valid_anagram.001
+title: Valid Anagram
+chapter: arrays
+pattern_id: arrays-and-hashing
+difficulty: 2
+type: full_recall
+role: lesson
+primary_pattern: arrays-and-hashing
+
+prompt: |
+  Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
+  An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+  Example:
+  Input: `s = "anagram"`, `t = "nagaram"`
+  Output: `true`
+
+starter: |
+  package challenge
+
+  func isAnagram(s string, t string) bool {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return false
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestIsAnagram_Visible
+    - TestIsAnagram_Hidden
+
+hints:
+  - If lengths of `s` and `t` are different, they cannot be anagrams.
+  - Count frequencies of characters in `s` and decrement frequencies using `t`. All counts must end up as 0.
+
+explanation: |
+  A frequency map (or size 26 array for lowercase letters) records occurrences in O(n) time and O(1) space.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestIsAnagram_Visible(t *testing.T) {
+      tests := []struct {
+          s    string
+          t    string
+          want bool
+      }{
+          {s: "anagram", t: "nagaram", want: true},
+          {s: "rat", t: "car", want: false},
+      }
+
+      for _, tt := range tests {
+          got := isAnagram(tt.s, tt.t)
+          if got != tt.want {
+              t.Errorf("isAnagram(%q, %q) = %t, want %t", tt.s, tt.t, got, tt.want)
+          }
+      }
+  }
+
+  func TestIsAnagram_Hidden(t *testing.T) {
+      tests := []struct {
+          s    string
+          t    string
+          want bool
+      }{
+          {s: "", t: "", want: true},
+          {s: "a", t: "ab", want: false},
+          {s: "aa", t: "a", want: false},
+      }
+
+      for _, tt := range tests {
+          got := isAnagram(tt.s, tt.t)
+          if got != tt.want {
+              t.Errorf("isAnagram(%q, %q) = %t, want %t", tt.s, tt.t, got, tt.want)
+          }
+      }
+  }

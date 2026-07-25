@@ -1,0 +1,46 @@
+id: httptest.new_recorder.001
+title: Create a response recorder
+chapter: testing
+pattern_id: httptest.new_recorder
+difficulty: 1
+type: full_recall
+prompt: |
+    Create and return a new `httptest.ResponseRecorder` using the `httptest` package.
+starter: |
+    package challenge
+
+    import (
+        "net/http/httptest"
+    )
+
+    func createRecorder() *httptest.ResponseRecorder {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestCreateRecorder
+    ast_rules:
+        - uses_httptest_new_recorder
+hints:
+    - Use `httptest.NewRecorder()` from the `net/http/httptest` standard library package.
+explanation: |
+    `httptest.NewRecorder` returns an initialized `ResponseRecorder` struct pointer,
+    which implements the `http.ResponseWriter` interface. It is used in tests to inspect
+    the headers, status code, and body written by the handler.
+test_code: |
+    package challenge
+
+    import (
+        "testing"
+    )
+
+    func TestCreateRecorder(t *testing.T) {
+        rec := createRecorder()
+        if rec == nil {
+            t.Fatal("expected non-nil response recorder")
+        }
+    }

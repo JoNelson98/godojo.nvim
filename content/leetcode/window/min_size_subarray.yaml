@@ -1,0 +1,86 @@
+id: leetcode.min_size_subarray.001
+title: Minimum Size Subarray Sum
+chapter: window
+pattern_id: variable-sliding-window
+difficulty: 2
+type: full_recall
+role: lesson
+primary_pattern: variable-sliding-window
+
+prompt: |
+  Given an array of positive integers `nums` and a positive integer `target`, find the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return `0` instead.
+
+  Example:
+  Input: `target = 7`, `nums = [2, 3, 1, 2, 4, 3]`
+  Output: `2`
+  Explanation: The subarray `[4, 3]` has the minimal length under the problem constraint.
+
+starter: |
+  package challenge
+
+  func minSubArrayLen(target int, nums []int) int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return 0
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestMinSubArrayLen_Visible
+    - TestMinSubArrayLen_Hidden
+
+hints:
+  - Keep a variable window sum and a `left` pointer starting at 0.
+  - Expand the window with a `right` pointer. While the current window sum is greater than or equal to `target`, shrink the window from the left to find the smallest valid range.
+
+explanation: |
+  This is the classic Variable Sliding Window pattern.
+  We expand the window with the `right` pointer, and whenever the window invariant (sum >= target) is met,
+  we dynamically shrink it from the `left` to minimize its length and keep track of the minimum.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestMinSubArrayLen_Visible(t *testing.T) {
+      tests := []struct {
+          target int
+          nums   []int
+          want   int
+      }{
+          {target: 7, nums: []int{2, 3, 1, 2, 4, 3}, want: 2},
+          {target: 4, nums: []int{1, 4, 4}, want: 1},
+          {target: 11, nums: []int{1, 1, 1, 1, 1, 1, 1, 1}, want: 0},
+      }
+
+      for _, tt := range tests {
+          got := minSubArrayLen(tt.target, tt.nums)
+          if got != tt.want {
+              t.Errorf("minSubArrayLen(%d, %v) = %d, want %d", tt.target, tt.nums, got, tt.want)
+          }
+      }
+  }
+
+  func TestMinSubArrayLen_Hidden(t *testing.T) {
+      tests := []struct {
+          target int
+          nums   []int
+          want   int
+      }{
+          {target: 5, nums: []int{2, 3}, want: 2},
+          {target: 8, nums: []int{}, want: 0},
+      }
+
+      for _, tt := range tests {
+          got := minSubArrayLen(tt.target, tt.nums)
+          if got != tt.want {
+              t.Errorf("minSubArrayLen(%d, %v) = %d, want %d", tt.target, tt.nums, got, tt.want)
+          }
+      }
+  }

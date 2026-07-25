@@ -1,0 +1,56 @@
+id: httptest.serve_http.001
+title: Serve an HTTP request in test
+chapter: testing
+pattern_id: httptest.serve_http
+difficulty: 2
+type: full_recall
+prompt: |
+    Invoke the `ServeHTTP` method on the provided handler, passing the response recorder and request.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+    )
+
+    func serveTestRequest(handler http.Handler, w *httptest.ResponseRecorder, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestServeTestRequest
+    ast_rules:
+        - uses_serve_http
+hints:
+    - Call `handler.ServeHTTP` directly with `w` and `r`.
+explanation: |
+    Every `http.Handler` implements the `ServeHTTP(ResponseWriter, *Request)` interface method.
+    Invoking it in test executes your handler logic directly and synchronously.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestServeTestRequest(t *testing.T) {
+        called := false
+        h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            called = true
+        })
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+
+        serveTestRequest(h, rec, req)
+
+        if !called {
+            t.Error("expected handler to be served and called, but it was not")
+        }
+    }

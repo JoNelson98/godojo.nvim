@@ -1,0 +1,71 @@
+id: json.marshal.001
+title: Marshal Struct to JSON Bytes
+chapter: json
+pattern_id: json.marshal
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Implement `serializeUser` to serialize the given `User` struct into JSON bytes using `json.Marshal`.
+  Return the resulting byte slice and any error.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+  )
+
+  type User struct {
+      Username string `json:"username"`
+      Active   bool   `json:"active"`
+  }
+
+  func serializeUser(u User) ([]byte, error) {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestSerializeUser_Success
+  ast_rules: []
+
+feedback:
+  missing_marshal: |
+    Call `json.Marshal(u)` to serialize the struct into a byte slice.
+
+hints:
+  - "Simply return the result and error of calling `json.Marshal(u)`."
+
+explanation: |
+  `json.Marshal` traverses the value recursively to produce JSON bytes.
+  If a field contains unsupported types like channels, complex numbers, or functions, marshaling will return an error.
+
+test_code: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "testing"
+  )
+
+  func TestSerializeUser_Success(t *testing.T) {
+      u := User{Username: "alice", Active: true}
+      bytes, err := serializeUser(u)
+      if err != nil {
+          t.Fatalf("unexpected error: %v", err)
+      }
+
+      var parsed map[string]interface{}
+      if err := json.Unmarshal(bytes, &parsed); err != nil {
+          t.Fatalf("invalid json generated: %s", string(bytes))
+      }
+
+      if parsed["username"] != "alice" || parsed["active"] != true {
+          t.Errorf("expected username=alice, active=true, got %+v", parsed)
+      }
+  }

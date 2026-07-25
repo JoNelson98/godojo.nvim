@@ -1,0 +1,88 @@
+id: leetcode.two_sum.001
+title: Two Sum
+chapter: arrays
+pattern_id: arrays-and-hashing
+difficulty: 2
+type: full_recall
+role: lesson
+primary_pattern: arrays-and-hashing
+
+prompt: |
+  Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
+  You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.
+
+  Example:
+  Input: `nums = [2, 7, 11, 15]`, `target = 9`
+  Output: `[0, 1]`
+
+starter: |
+  package challenge
+
+  func twoSum(nums []int, target int) []int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return nil
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestTwoSum_Visible
+    - TestTwoSum_Hidden
+
+hints:
+  - "While iterating, store the index of each number in a hash map: `map[int]int` (value -> index)."
+  - For each number `x`, check if `target - x` is already present in your map.
+
+explanation: |
+  By checking for the complement `target - x` in our map at each step, we can solve Two Sum
+  in a single pass of O(n) time complexity, instead of a nested O(n^2) brute force search.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestTwoSum_Visible(t *testing.T) {
+      tests := []struct {
+          nums   []int
+          target int
+          want   []int
+      }{
+          {nums: []int{2, 7, 11, 15}, target: 9, want: []int{0, 1}},
+          {nums: []int{3, 2, 4}, target: 6, want: []int{1, 2}},
+      }
+
+      for _, tt := range tests {
+          got := twoSum(tt.nums, tt.target)
+          if len(got) != 2 || (got[0] != tt.want[0] && got[1] != tt.want[0]) {
+              // Simple checker since order does not matter
+              sum := tt.nums[got[0]] + tt.nums[got[1]]
+              if sum != tt.target {
+                  t.Errorf("twoSum(%v, %d) = %v, got sum %d, want target %d", tt.nums, tt.target, got, sum, tt.target)
+              }
+          }
+      }
+  }
+
+  func TestTwoSum_Hidden(t *testing.T) {
+      tests := []struct {
+          nums   []int
+          target int
+          want   []int
+      }{
+          {nums: []int{3, 3}, target: 6, want: []int{0, 1}},
+          {nums: []int{-3, 4, 3, 90}, target: 0, want: []int{0, 2}},
+      }
+
+      for _, tt := range tests {
+          got := twoSum(tt.nums, tt.target)
+          if len(got) != 2 || tt.nums[got[0]]+tt.nums[got[1]] != tt.target {
+              t.Errorf("twoSum(%v, %d) failed, got indices %v", tt.nums, tt.target, got)
+          }
+      }
+  }

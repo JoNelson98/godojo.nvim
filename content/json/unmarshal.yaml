@@ -1,0 +1,74 @@
+id: json.unmarshal.001
+title: Unmarshal JSON Bytes
+chapter: json
+pattern_id: json.unmarshal
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Implement `parseUser` to parse raw JSON bytes into a `User` struct using `json.Unmarshal`.
+  Return the unmarshaled struct and any error encountered.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+  )
+
+  type User struct {
+      Email string `json:"email"`
+      Age   int    `json:"age"`
+  }
+
+  func parseUser(data []byte) (User, error) {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestParseUser_Success
+    - TestParseUser_Error
+  ast_rules: []
+
+feedback:
+  missing_unmarshal: |
+    Call `json.Unmarshal(data, &user)` passing the byte slice and the address of your user struct.
+
+hints:
+  - "Declare a `var u User`."
+  - "Pass a pointer to `u` using `&u` to `json.Unmarshal`."
+  - "Return `u` and the error returned by `json.Unmarshal`."
+
+explanation: |
+  `json.Unmarshal` parses the JSON-encoded data and stores the result in the value pointed to by its second argument.
+  If the second argument is not a pointer or is nil, Unmarshal returns a `json.InvalidUnmarshalError`.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestParseUser_Success(t *testing.T) {
+      input := []byte(`{"email":"bob@example.com","age":30}`)
+      user, err := parseUser(input)
+      if err != nil {
+          t.Fatalf("unexpected error: %v", err)
+      }
+      if user.Email != "bob@example.com" || user.Age != 30 {
+          t.Errorf("unexpected user values: %+v", user)
+      }
+  }
+
+  func TestParseUser_Error(t *testing.T) {
+      _, err := parseUser([]byte(`{invalid json`))
+      if err == nil {
+          t.Error("expected error for invalid JSON, got nil")
+      }
+  }

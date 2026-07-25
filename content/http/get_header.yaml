@@ -1,0 +1,70 @@
+id: http.get_header.001
+title: Get Request Header Value
+chapter: http
+pattern_id: http.get_header
+difficulty: 2
+type: full_recall
+prompt: |
+    Read the request header `"X-User-ID"`. If it's empty, return an HTTP 400 Bad Request error.
+    If present, write `"User: "` followed by the header value to the response body.
+starter: |
+    package challenge
+
+    import (
+        "io"
+        "net/http"
+    )
+
+    func headerReaderHandler(w http.ResponseWriter, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestHeaderReader_Present
+        - TestHeaderReader_Missing
+    ast_rules: []
+feedback:
+    missing_get_header: |
+        Use `r.Header.Get("X-User-ID")` to fetch the header value. Return Bad Request if empty.
+hints:
+    - You can read header values using the `Get` method on `r.Header`.
+explanation: |
+    The `r.Header` field is of type `http.Header` (which is a map from header keys to slices of strings).
+    `r.Header.Get("Key")` is the canonical way to fetch the first value associated with a key, ignoring case variations.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestHeaderReader_Present(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        req.Header.Set("X-User-ID", "12345")
+        headerReaderHandler(rec, req)
+
+        if rec.Code != http.StatusOK {
+            t.Errorf("expected status 200, got %d", rec.Code)
+        }
+        got := rec.Body.String()
+        if got != "User: 12345" {
+            t.Errorf("expected 'User: 12345', got %q", got)
+        }
+    }
+
+    func TestHeaderReader_Missing(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        headerReaderHandler(rec, req)
+
+        if rec.Code != http.StatusBadRequest {
+            t.Errorf("expected status 400, got %d", rec.Code)
+        }
+    }

@@ -1,0 +1,80 @@
+id: json.struct_tag.001
+title: Struct Tags for JSON Serialization
+chapter: json
+pattern_id: json.struct_tag
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Define a struct named `Product` with the following fields and JSON tags:
+  - `ID` (type `int`): serialized as "id"
+  - `Title` (type `string`): serialized as "title"
+  - `InStock` (type `bool`): serialized as "in_stock"
+  - `DiscountCode` (type `string`): serialized as "discount_code,omitempty" (should be omitted when empty)
+
+starter: |
+  package challenge
+
+  // godojo:start
+  // Define your Product struct here with correct JSON tags.
+  // godojo:end
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestProductStructTags
+  ast_rules: []
+
+feedback:
+  missing_struct: |
+    Make sure to define the `Product` struct with exact field names and types.
+  missing_tag: |
+    Double check that your field tags exactly match the requested json key names, including `omitempty`.
+
+hints:
+  - 'The format for tags is: Field Type `json:"key"`.'
+  - 'To omit empty values, append `,omitempty` inside the JSON tag value.'
+
+explanation: |
+  Go uses reflection-based struct tags to map struct field names to custom JSON object keys.
+  The `omitempty` option tells the encoder to skip the field if it has its type's zero-value (e.g. `""` for string).
+
+test_code: |
+  package challenge
+
+  import (
+      "reflect"
+      "testing"
+  )
+
+  func TestProductStructTags(t *testing.T) {
+      typ := reflect.TypeOf(Product{})
+      if typ.Kind() != reflect.Struct {
+          t.Fatal("Product is not a struct")
+      }
+
+      fields := map[string]struct {
+          typ reflect.Type
+          tag string
+      }{
+          "ID":           {reflect.TypeOf(int(0)), "id"},
+          "Title":        {reflect.TypeOf(""), "title"},
+          "InStock":      {reflect.TypeOf(true), "in_stock"},
+          "DiscountCode": {reflect.TypeOf(""), "discount_code,omitempty"},
+      }
+
+      for fieldName, expected := range fields {
+          f, found := typ.FieldByName(fieldName)
+          if !found {
+              t.Fatalf("missing field %s in Product struct", fieldName)
+          }
+          if f.Type != expected.typ {
+              t.Errorf("field %s should be of type %v, got %v", fieldName, expected.typ, f.Type)
+          }
+          gotTag := f.Tag.Get("json")
+          if gotTag != expected.tag {
+              t.Errorf("expected json tag for field %s to be %q, got %q", fieldName, expected.tag, gotTag)
+          }
+      }
+  }

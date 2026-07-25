@@ -1,0 +1,75 @@
+id: leetcode.container_water.001
+title: Container With Most Water
+chapter: pointers
+pattern_id: two-pointers
+difficulty: 4
+type: full_recall
+role: boss
+primary_pattern: two-pointers
+
+prompt: |
+  Given an integer array `height` of length `n`. There are `n` vertical lines drawn such that the two endpoints of the `i`th line are `(i, 0)` and `(i, height[i])`.
+  Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.
+
+  Example:
+  Input: `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]`
+  Output: `49`
+  Explanation: The above vertical lines are represented by array `height`. In this case, the max area of water the container can contain is `49` (distance of 7 * min height of 7).
+
+starter: |
+  package challenge
+
+  func maxArea(height []int) int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return 0
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestMaxArea_Visible
+    - TestMaxArea_Hidden
+
+hints:
+  - "Start with two pointers at opposite ends of the array: `left = 0` and `right = len(height) - 1`."
+  - "Compute the area: `(right - left) * min(height[left], height[right])`. To find a larger area, shift the pointer pointing to the shorter vertical line inward."
+
+explanation: |
+  The Two Pointers pattern starts with the widest window. Shifting the taller pointer inward can never increase the container height;
+  thus, we must always shift the shorter pointer inward, searching for a larger area in O(n) time.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestMaxArea_Visible(t *testing.T) {
+      height := []int{1, 8, 6, 2, 5, 4, 8, 3, 7}
+      got := maxArea(height)
+
+      if got != 49 {
+          t.Errorf("expected 49, got %d", got)
+      }
+  }
+
+  func TestMaxArea_Hidden(t *testing.T) {
+      tests := []struct {
+          height []int
+          want   int
+      }{
+          {height: []int{1, 1}, want: 1},
+          {height: []int{4, 3, 2, 1, 4}, want: 16},
+      }
+
+      for _, tt := range tests {
+          got := maxArea(tt.height)
+          if got != tt.want {
+              t.Errorf("maxArea(%v) = %d, want %d", tt.height, got, tt.want)
+          }
+      }
+  }

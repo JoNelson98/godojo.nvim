@@ -1,0 +1,64 @@
+id: http.method_check.001
+title: Check Request Method
+chapter: http
+pattern_id: http.method_check
+difficulty: 2
+type: full_recall
+prompt: |
+    In the given handler, verify that `r.Method` is `http.MethodGet` (GET).
+    If it is not, return a `http.StatusMethodNotAllowed` (405) error and stop execution. Otherwise, write 200 OK.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    func getOnlyHandler(w http.ResponseWriter, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestGetOnlyHandler_Valid
+        - TestGetOnlyHandler_Invalid
+    ast_rules: []
+feedback:
+    missing_method_check: |
+        Ensure you compare `r.Method` against `http.MethodGet`. If it's not a match, call `http.Error` with `http.StatusMethodNotAllowed` and `return`.
+hints:
+    - Check `r.Method == http.MethodGet` or `r.Method != http.MethodGet`.
+    - Use `http.StatusMethodNotAllowed` for the status code of the disallowed method.
+explanation: |
+    Filtering requests based on HTTP methods (verbs) is a fundamental part of writing secure REST APIs. You inspect `r.Method` and return 405 Method Not Allowed if the method is incorrect.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestGetOnlyHandler_Valid(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        getOnlyHandler(rec, req)
+
+        if rec.Code != http.StatusOK {
+            t.Errorf("expected 200 OK, got %d", rec.Code)
+        }
+    }
+
+    func TestGetOnlyHandler_Invalid(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("POST", "/", nil)
+        getOnlyHandler(rec, req)
+
+        if rec.Code != http.StatusMethodNotAllowed {
+            t.Errorf("expected 405 Method Not Allowed, got %d", rec.Code)
+        }
+    }

@@ -1,0 +1,79 @@
+id: json.nested_dto.001
+title: Nested DTO JSON Decoding
+chapter: json
+pattern_id: json.nested_dto
+difficulty: 3
+type: full_recall
+
+prompt: |
+  Define the nested DTO structs `Address` and `ProfileRequest` to support decoding this JSON payload:
+  ```json
+  {
+    "username": "johndoe",
+    "address": {
+      "city": "Seattle",
+      "zip": "98101"
+    }
+  }
+  ```
+  Then, write the `decodeProfile` function to decode this request body from an `*http.Request` into the `ProfileRequest` struct and return it along with any error.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http"
+  )
+
+  // godojo:start
+  // Define Address and ProfileRequest structs with proper JSON tags, 
+  // and write the decodeProfile function.
+  // godojo:end
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestDecodeProfile_Nested
+  ast_rules:
+    - uses_json_new_decoder
+    - decode_receives_address
+
+feedback:
+  missing_nested_fields: |
+    Verify that your `ProfileRequest` struct has an `Address` field of type `Address` or `*Address` mapped to key "address".
+
+hints:
+  - "Struct fields must be exported (start with capital letters) to be accessible by `encoding/json`."
+  - 'Address needs City string `json:"city"` and Zip string `json:"zip"`.'
+  - 'ProfileRequest needs Username string `json:"username"` and Address Address `json:"address"`.'
+
+explanation: |
+  Go's `encoding/json` package recursively parses nested JSON objects as long as the nested struct definitions map correctly with tags and their fields are exported (capitalized).
+
+test_code: |
+  package challenge
+
+  import (
+      "net/http"
+      "strings"
+      "testing"
+  )
+
+  func TestDecodeProfile_Nested(t *testing.T) {
+      input := `{"username":"johndoe","address":{"city":"Seattle","zip":"98101"}}`
+      req, _ := http.NewRequest("POST", "/", strings.NewReader(input))
+
+      res, err := decodeProfile(req)
+      if err != nil {
+          t.Fatalf("failed to decode: %v", err)
+      }
+
+      if res.Username != "johndoe" {
+          t.Errorf("expected username johndoe, got %q", res.Username)
+      }
+      if res.Address.City != "Seattle" || res.Address.Zip != "98101" {
+          t.Errorf("expected Seattle 98101, got %s %s", res.Address.City, res.Address.Zip)
+      }
+  }

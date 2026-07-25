@@ -1,0 +1,37 @@
+id: fixed-sliding-window
+name: Fixed Sliding Window
+chapter: sliding-window
+solves: |
+  Subarrays of a constant size K.
+clues:
+  - Constant size subregion.
+  - Find max, min, or average of size K.
+invariant: |
+  The active window size remains exactly K.
+skeleton: |
+  // Generic Template: Fixed Sliding Window of size K in Go
+  func fixedWindowTemplate(items []int, k int) int {
+      if len(items) < k {
+          return 0
+      }
+
+      // 1. Process/accumulate state for the first window of size K
+      for i := 0; i < k; i++ {
+          // add(items[i])
+      }
+
+      // 2. Slide the window across the remaining elements in O(1)
+      for i := k; i < len(items); i++ {
+          // add(items[i])      // Element entering the window at index 'i'
+          // remove(items[i-k]) // Element leaving the window at index 'i-k'
+
+          // Update global answer
+      }
+      return 0
+  }
+time_complexity: O(n)
+space_complexity: O(1)
+mistakes:
+  - Off-by-one errors on bounds.
+related:
+  - variable-sliding-window

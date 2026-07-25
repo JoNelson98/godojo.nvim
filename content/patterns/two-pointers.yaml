@@ -1,0 +1,40 @@
+id: two-pointers
+name: Two Pointers
+chapter: pointers
+solves: |
+  Searching sorted arrays or modifying lists in O(n) time and O(1) space.
+clues:
+  - Sorted array searching.
+  - Modifying or reversing elements in-place.
+  - Merging two ordered streams.
+invariant: |
+  The two pointers move toward each other (or in parallel) to cover all valid candidates.
+skeleton: |
+  // Generic Template: Converging Two Pointers in Go
+  func twoPointersTemplate(items []int) {
+      left := 0
+      right := len(items) - 1
+
+      for left < right {
+          // 1. Check current pair condition
+          if checkCondition(items[left], items[right]) {
+              // Process result and return/break
+              break
+          }
+
+          // 2. Decide how to shift pointers based on sorted order or targets
+          if shouldMoveLeft() {
+              left++
+          } else {
+              right--
+          }
+      }
+  }
+time_complexity: O(n)
+space_complexity: O(1)
+mistakes:
+  - Forgetting pointer boundary checks (`left < right`).
+  - Advancing pointers in the wrong direction causing infinite loops.
+related:
+  - arrays-and-hashing
+  - variable-sliding-window

@@ -1,0 +1,82 @@
+id: leetcode.contains_duplicate.001
+title: Contains Duplicate
+chapter: arrays
+pattern_id: arrays-and-hashing
+difficulty: 1
+type: full_recall
+role: lesson
+primary_pattern: arrays-and-hashing
+
+prompt: |
+  Given an integer array `nums`, return `true` if any value appears at least twice in the array, and return `false` if every element is distinct.
+
+  Example:
+  Input: `nums = [1, 2, 3, 1]`
+  Output: `true`
+
+starter: |
+  package challenge
+
+  func containsDuplicate(nums []int) bool {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return false
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestContainsDuplicate_Visible
+    - TestContainsDuplicate_Hidden
+
+hints:
+  - Use a map `map[int]bool` to track seen numbers.
+  - Iterate through `nums`. If the number is already in the map, return `true`, else add it.
+
+explanation: |
+  A hash map provides O(1) average lookup time.
+  By iterating through the array once and storing visited numbers in a set-like map, we achieve O(n) time and O(n) space complexity.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestContainsDuplicate_Visible(t *testing.T) {
+      tests := []struct {
+          nums []int
+          want bool
+      }{
+          {nums: []int{1, 2, 3, 1}, want: true},
+          {nums: []int{1, 2, 3, 4}, want: false},
+      }
+
+      for _, tt := range tests {
+          got := containsDuplicate(tt.nums)
+          if got != tt.want {
+              t.Errorf("containsDuplicate(%v) = %t, want %t", tt.nums, got, tt.want)
+          }
+      }
+  }
+
+  func TestContainsDuplicate_Hidden(t *testing.T) {
+      tests := []struct {
+          nums []int
+          want bool
+      }{
+          {nums: []int{}, want: false},
+          {nums: []int{99}, want: false},
+          {nums: []int{1, 1, 1}, want: true},
+      }
+
+      for _, tt := range tests {
+          got := containsDuplicate(tt.nums)
+          if got != tt.want {
+              t.Errorf("containsDuplicate(%v) = %t, want %t", tt.nums, got, tt.want)
+          }
+      }
+  }

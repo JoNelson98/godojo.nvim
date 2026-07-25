@@ -1,0 +1,53 @@
+id: httptest.result.001
+title: Get test response result
+chapter: testing
+pattern_id: httptest.result
+difficulty: 2
+type: full_recall
+prompt: |
+    Extract the final HTTP response result from the response recorder.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+    )
+
+    func getResponseResult(w *httptest.ResponseRecorder) *http.Response {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestGetResponseResult
+    ast_rules:
+        - uses_recorder_result
+hints:
+    - Call `.Result()` on the response recorder pointer `w`.
+explanation: |
+    `ResponseRecorder.Result()` returns an initialized `*http.Response` representation
+    of the written response, which contains the final header values, status code, and body stream.
+test_code: |
+    package challenge
+
+    import (
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestGetResponseResult(t *testing.T) {
+        rec := httptest.NewRecorder()
+        rec.WriteHeader(201)
+        res := getResponseResult(rec)
+
+        if res == nil {
+            t.Fatal("expected non-nil response")
+        }
+        if res.StatusCode != 201 {
+            t.Errorf("expected status code 201, got %d", res.StatusCode)
+        }
+    }

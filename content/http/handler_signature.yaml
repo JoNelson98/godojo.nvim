@@ -1,0 +1,44 @@
+id: http.handler_signature.001
+title: HTTP Handler Signature
+chapter: http
+pattern_id: http.handler_signature
+difficulty: 1
+type: full_recall
+prompt: |
+    Write a standard HTTP handler function named `helloHandler` that matches Go's `http.HandlerFunc` signature.
+    The handler does not need to write any response or headers for now.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    // godojo:start
+    // Write your solution here.
+    // godojo:end
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestHelloHandlerSignature
+    ast_rules: []
+feedback:
+    missing_handler: |
+        Ensure you define the function exactly as `helloHandler(w http.ResponseWriter, r *http.Request)`.
+hints:
+    - An HTTP handler function has the signature `func(w http.ResponseWriter, r *http.Request)`.
+explanation: |
+    In Go, HTTP handlers are often represented by the `http.HandlerFunc` type, which is an adapter to allow the use of ordinary functions as HTTP handlers.
+    The signature is `func(w http.ResponseWriter, r *http.Request)`.
+test_code: |
+    package challenge
+
+    import (
+        "net/http"
+        "testing"
+    )
+
+    func TestHelloHandlerSignature(t *testing.T) {
+        var _ http.HandlerFunc = helloHandler
+    }

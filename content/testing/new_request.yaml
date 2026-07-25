@@ -1,0 +1,55 @@
+id: httptest.new_request.001
+title: Call httptest.NewRequest
+chapter: testing
+pattern_id: httptest.new_request
+difficulty: 1
+type: full_recall
+prompt: |
+    Create a helper function `createTestRequest(method, target string) *http.Request` that uses `httptest.NewRequest` to construct and return a new mock `*http.Request` with a `nil` body.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+        "net/http/httptest"
+    )
+
+    func createTestRequest(method, target string) *http.Request {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestCreateTestRequest
+    ast_rules:
+        - uses_httptest_new_request
+feedback:
+    missing_httptest: |
+        Ensure you call `httptest.NewRequest` with the appropriate method, target path, and nil body.
+hints:
+    - 'Use `httptest.NewRequest(method, target, nil)` to build the request.'
+    - 'The `httptest` package is imported as "net/http/httptest".'
+explanation: |
+    In unit tests, rather than setting up a real TCP listener and sending a real HTTP request, Go provides `httptest.NewRequest` which returns a pre-configured `*http.Request` that can be fed directly into your handlers.
+test_code: |
+    package challenge
+
+    import (
+        "testing"
+    )
+
+    func TestCreateTestRequest(t *testing.T) {
+        req := createTestRequest("GET", "/users")
+        if req == nil {
+            t.Fatal("expected request to not be nil")
+        }
+        if req.Method != "GET" {
+            t.Errorf("expected method 'GET', got %q", req.Method)
+        }
+        if req.URL.Path != "/users" {
+            t.Errorf("expected path '/users', got %q", req.URL.Path)
+        }
+    }

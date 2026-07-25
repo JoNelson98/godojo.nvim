@@ -1,0 +1,85 @@
+id: leetcode.valid_palindrome.001
+title: Valid Palindrome
+chapter: pointers
+pattern_id: two-pointers
+difficulty: 2
+type: full_recall
+role: lesson
+primary_pattern: two-pointers
+
+prompt: |
+  Given a string `s`, return `true` if it is a palindrome, or `false` otherwise.
+  Consider only alphanumeric characters and ignore cases.
+
+  Example:
+  Input: `s = "A man, a plan, a canal: Panama"`
+  Output: `true`
+  Explanation: "amanaplanacanalpanama" is a palindrome.
+
+starter: |
+  package challenge
+
+  func isPalindrome(s string) bool {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return false
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestIsPalindrome_Visible
+    - TestIsPalindrome_Hidden
+
+hints:
+  - "Keep a `left` pointer at 0 and a `right` pointer at `len(s) - 1`."
+  - "Skip non-alphanumeric characters by advancing `left` or decrementing `right` until alphanumeric keys are reached. Then compare case-insensitively."
+
+explanation: |
+  The Two Pointers pattern checks symmetry from outside in.
+  By ignoring symbols on the fly, we achieve palindrome validation in O(n) time and O(1) space.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestIsPalindrome_Visible(t *testing.T) {
+      tests := []struct {
+          s    string
+          want bool
+      }{
+          {s: "A man, a plan, a canal: Panama", want: true},
+          {s: "race a car", want: false},
+          {s: " ", want: true},
+      }
+
+      for _, tt := range tests {
+          got := isPalindrome(tt.s)
+          if got != tt.want {
+              t.Errorf("isPalindrome(%q) = %t, want %t", tt.s, got, tt.want)
+          }
+      }
+  }
+
+  func TestIsPalindrome_Hidden(t *testing.T) {
+      tests := []struct {
+          s    string
+          want bool
+      }{
+          {s: "", want: true},
+          {s: "a.", want: true},
+          {s: "ab", want: false},
+      }
+
+      for _, tt := range tests {
+          got := isPalindrome(tt.s)
+          if got != tt.want {
+              t.Errorf("isPalindrome(%q) = %t, want %t", tt.s, got, tt.want)
+          }
+      }
+  }

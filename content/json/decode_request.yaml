@@ -1,0 +1,85 @@
+id: json.decode_request.001
+title: Decode a JSON request
+chapter: json
+pattern_id: json.decode_request
+difficulty: 3
+type: full_recall
+
+prompt: |
+  Decode r.Body into input and return any decoding error.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http"
+  )
+
+  type CreateCompanyRequest struct {
+      Name string `json:"name"`
+  }
+
+  func decodeRequest(r *http.Request) (CreateCompanyRequest, error) {
+      var input CreateCompanyRequest
+
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+
+      return input, nil
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestDecodeRequest_Valid
+    - TestDecodeRequest_Invalid
+  ast_rules:
+    - uses_json_new_decoder
+    - decoder_reads_request_body
+    - decode_receives_address
+
+feedback:
+  decode_without_pointer: |
+    Decode must receive a pointer to input so it can populate the original value.
+
+  missing_error_return: |
+    The decoder returns an error. Return that error to the caller.
+
+hints:
+  - Use `json.NewDecoder` to read from the request body.
+  - Call `.Decode` passing the address of `input` using the address operator (`&`).
+
+explanation: |
+  json.Decoder writes decoded fields into the destination value.
+  Passing `&input` (by pointer reference) gives Decode direct access to modify the original struct.
+
+test_code: |
+  package challenge
+
+  import (
+      "net/http"
+      "strings"
+      "testing"
+  )
+
+  func TestDecodeRequest_Valid(t *testing.T) {
+      req, _ := http.NewRequest("POST", "/", strings.NewReader(`{"name":"Acme"}`))
+      res, err := decodeRequest(req)
+      if err != nil {
+          t.Fatalf("unexpected error: %v", err)
+      }
+      if res.Name != "Acme" {
+          t.Errorf("expected Acme, got %q", res.Name)
+      }
+  }
+
+  func TestDecodeRequest_Invalid(t *testing.T) {
+      req, _ := http.NewRequest("POST", "/", strings.NewReader(`{invalid`))
+      _, err := decodeRequest(req)
+      if err == nil {
+          t.Error("expected error for invalid JSON, got nil")
+      }
+  }

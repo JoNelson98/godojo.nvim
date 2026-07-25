@@ -1,0 +1,76 @@
+id: leetcode.reverse_string.001
+title: Reverse String
+chapter: pointers
+pattern_id: two-pointers
+difficulty: 1
+type: full_recall
+role: lesson
+primary_pattern: two-pointers
+
+prompt: |
+  Write a function that reverses a string. The input string is given as an array of characters `s`.
+  You must do this by modifying the input array in-place with O(1) extra memory.
+
+  Example:
+  Input: `s = ["h", "e", "l", "l", "o"]`
+  Output: `["o", "l", "l", "e", "h"]`
+
+starter: |
+  package challenge
+
+  func reverseString(s []byte) {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestReverseString_Visible
+    - TestReverseString_Hidden
+
+hints:
+  - "Initialize two pointers: `left = 0` and `right = len(s) - 1`."
+  - "While `left < right`, swap `s[left]` and `s[right]`, then move `left` rightward and `right` leftward."
+
+explanation: |
+  The Two Pointers pattern swaps elements at opposite ends of the collection,
+  achieving an in-place reversal in O(n) time and O(1) space.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestReverseString_Visible(t *testing.T) {
+      s := []byte{'h', 'e', 'l', 'l', 'o'}
+      reverseString(s)
+
+      got := string(s)
+      if got != "olleh" {
+          t.Errorf("expected 'olleh', got %q", got)
+      }
+  }
+
+  func TestReverseString_Hidden(t *testing.T) {
+      tests := []struct {
+          s    []byte
+          want string
+      }{
+          {s: []byte{}, want: ""},
+          {s: []byte{'a'}, want: "a"},
+          {s: []byte{'a', 'b'}, want: "ba"},
+      }
+
+      for _, tt := range tests {
+          reverseString(tt.s)
+          got := string(tt.s)
+          if got != tt.want {
+              t.Errorf("expected %q, got %q", tt.want, got)
+          }
+      }
+  }

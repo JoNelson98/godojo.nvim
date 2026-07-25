@@ -1,0 +1,73 @@
+id: json.empty_response.001
+title: Write Empty JSON Object
+chapter: json
+pattern_id: json.empty_response
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Implement `writeEmptyJSON` to write an empty JSON object `{}` to the ResponseWriter.
+  Set the `Content-Type` header to `application/json` and write `http.StatusOK` status code.
+
+starter: |
+  package challenge
+
+  import (
+      "net/http"
+  )
+
+  func writeEmptyJSON(w http.ResponseWriter) {
+      // godojo:start
+      // Set the header, write status, and write empty JSON object bytes "{}"
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestWriteEmptyJSON
+  ast_rules: []
+
+feedback:
+  missing_content_type: |
+    Make sure you set the `Content-Type` header to `application/json`.
+  wrong_body: |
+    Ensure you write exactly `{}` or an empty object representation.
+
+hints:
+  - "Use `w.Header().Set(\"Content-Type\", \"application/json\")`."
+  - "Call `w.WriteHeader(http.StatusOK)`."
+  - "Write the raw bytes `[]byte(\"{}\")` to `w.Write`."
+
+explanation: |
+  Returning an empty JSON object `{}` is a standard way to represent a successful operation that doesn't return data (like deletions or simple actions), while maintaining JSON compatibility for clients.
+
+test_code: |
+  package challenge
+
+  import (
+      "net/http"
+      "net/http/httptest"
+      "strings"
+      "testing"
+  )
+
+  func TestWriteEmptyJSON(t *testing.T) {
+      rec := httptest.NewRecorder()
+      writeEmptyJSON(rec)
+
+      ct := rec.Header().Get("Content-Type")
+      if ct != "application/json" {
+          t.Errorf("expected content type application/json, got %q", ct)
+      }
+
+      if rec.Code != http.StatusOK {
+          t.Errorf("expected status 200, got %d", rec.Code)
+      }
+
+      body := strings.TrimSpace(rec.Body.String())
+      if body != "{}" {
+          t.Errorf("expected empty json object '{}', got %q", body)
+      }
+  }

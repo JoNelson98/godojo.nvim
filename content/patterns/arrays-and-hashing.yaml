@@ -1,0 +1,34 @@
+id: arrays-and-hashing
+name: Arrays and Hashing
+chapter: arrays
+solves: |
+  Lookup existence, frequencies, or values of items in O(1) time.
+clues:
+  - Checking for duplicates.
+  - Frequency counting or matching.
+  - Finding elements that sum to a target value.
+invariant: |
+  The hash map holds the correct current counts or index mappings.
+skeleton: |
+  // Generic Template: Hash Tracker (Frequency Counting / Mappings) in Go
+  func hashTrackerTemplate(items []int) {
+      // Create hash map to track occurrences, indices, or presence
+      tracker := make(map[int]int)
+
+      for idx, val := range items {
+          // 1. Query map to check existence or constraints in O(1) avg time
+          if _, exists := tracker[val]; exists {
+              // Process matching case
+          }
+
+          // 2. Update map state with current index or frequency count
+          tracker[val] = idx
+      }
+  }
+time_complexity: O(n)
+space_complexity: O(n)
+mistakes:
+  - Allocating excessive space when sorting or in-place lookup is possible.
+  - Forgetting map key existence checks.
+related:
+  - two-pointers

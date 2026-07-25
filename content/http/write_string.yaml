@@ -1,0 +1,52 @@
+id: http.write_string.001
+title: Write String to Response
+chapter: http
+pattern_id: http.write_string
+difficulty: 2
+type: full_recall
+prompt: |
+    Write the string "Hello, World!" to the response body using `w.Write()` or `io.WriteString()`.
+starter: |
+    package challenge
+
+    import (
+        "io"
+        "net/http"
+    )
+
+    func stringHandler(w http.ResponseWriter, r *http.Request) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestStringHandler
+    ast_rules: []
+feedback:
+    wrong_output: |
+        Make sure to write exactly "Hello, World!" to the response. You can use `io.WriteString(w, "Hello, World!")` or `w.Write([]byte("Hello, World!"))`.
+hints:
+    - Convert the string to bytes `[]byte("Hello, World!")` to pass to `w.Write`, or use `io.WriteString`.
+explanation: |
+    The `http.ResponseWriter` is an `io.Writer`. You can write plain text, HTML, or raw bytes directly to it using its `Write` method or helpers like `io.WriteString` or `fmt.Fprint`.
+test_code: |
+    package challenge
+
+    import (
+        "net/http/httptest"
+        "testing"
+    )
+
+    func TestStringHandler(t *testing.T) {
+        rec := httptest.NewRecorder()
+        req := httptest.NewRequest("GET", "/", nil)
+        stringHandler(rec, req)
+
+        got := rec.Body.String()
+        if got != "Hello, World!" {
+            t.Errorf("expected 'Hello, World!', got %q", got)
+        }
+    }

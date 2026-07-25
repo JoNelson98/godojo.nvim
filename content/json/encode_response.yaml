@@ -1,0 +1,73 @@
+id: json.encode_response.001
+title: Encode JSON Response
+chapter: json
+pattern_id: json.encode_response
+difficulty: 2
+type: full_recall
+
+prompt: |
+  Implement `writeJSONResponse` to encode the given `User` struct into the `http.ResponseWriter` using `json.NewEncoder`.
+
+starter: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http"
+  )
+
+  type User struct {
+      ID   int    `json:"id"`
+      Name string `json:"name"`
+  }
+
+  func writeJSONResponse(w http.ResponseWriter, user User) error {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestWriteJSONResponse
+  ast_rules:
+    - uses_json_new_encoder
+
+feedback:
+  missing_new_encoder: |
+    Use `json.NewEncoder(w)` to write the JSON directly to the ResponseWriter stream.
+
+hints:
+  - "Get a new encoder with `json.NewEncoder(w)`."
+  - "Call `.Encode(user)` on the encoder and return the error it returns."
+
+explanation: |
+  Using `json.NewEncoder(w).Encode(v)` is more efficient than `json.Marshal(v)` when writing to an `io.Writer` (like `http.ResponseWriter`), as it streams the bytes directly without allocating an intermediate byte slice.
+
+test_code: |
+  package challenge
+
+  import (
+      "encoding/json"
+      "net/http/httptest"
+      "testing"
+  )
+
+  func TestWriteJSONResponse(t *testing.T) {
+      rec := httptest.NewRecorder()
+      u := User{ID: 42, Name: "Alice"}
+      err := writeJSONResponse(rec, u)
+      if err != nil {
+          t.Fatalf("unexpected error: %v", err)
+      }
+
+      var res User
+      if err := json.Unmarshal(rec.Body.Bytes(), &res); err != nil {
+          t.Fatalf("failed to parse response: %v", err)
+      }
+      if res.ID != 42 || res.Name != "Alice" {
+          t.Errorf("expected User{42, Alice}, got %+v", res)
+      }
+  }

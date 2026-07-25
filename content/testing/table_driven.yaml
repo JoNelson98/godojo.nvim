@@ -1,0 +1,50 @@
+id: httptest.table_driven.001
+title: Write a table-driven test structure
+chapter: testing
+pattern_id: httptest.table_driven
+difficulty: 4
+type: full_recall
+prompt: |
+    Declare a table-driven test cases struct list with fields: `name`, `status`, and `expected`. Return the slice of cases.
+starter: |
+    package challenge
+
+    type TestCase struct {
+        Name     string
+        Status   int
+        Expected string
+    }
+
+    func getTestCases() []TestCase {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestGetTestCases
+    ast_rules:
+        - uses_test_case_struct
+hints:
+    - Return an instantiated literal slice `[]TestCase{...}` with at least two populated elements.
+explanation: |
+    Table-driven tests are the gold standard in Go testing. They list test scenarios
+    inside a slice of anonymous or concrete structs, and iterate over them using `t.Run`.
+test_code: |
+    package challenge
+
+    import (
+        "testing"
+    )
+
+    func TestGetTestCases(t *testing.T) {
+        cases := getTestCases()
+        if len(cases) < 2 {
+            t.Fatalf("expected at least 2 test cases, got %d", len(cases))
+        }
+        if cases[0].Name == "" || cases[0].Status == 0 || cases[0].Expected == "" {
+            t.Error("test cases are incomplete or unpopulated")
+        }
+    }

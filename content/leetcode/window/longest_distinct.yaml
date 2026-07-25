@@ -1,0 +1,86 @@
+id: leetcode.longest_distinct.001
+title: Longest Substring With At Most K Distinct Characters
+chapter: window
+pattern_id: variable-sliding-window
+difficulty: 3
+type: full_recall
+role: lesson
+primary_pattern: variable-sliding-window
+
+prompt: |
+  Given a string `s` and an integer `k`, find the length of the longest substring of `s` that contains at most `k` distinct characters.
+
+  Example:
+  Input: `s = "eceba"`, `k = 2`
+  Output: `3`
+  Explanation: The substring `ece` contains 2 distinct characters and has a length of 3.
+
+starter: |
+  package challenge
+
+  func lengthOfLongestSubstringKDistinct(s string, k int) int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return 0
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestLengthOfLongestSubstringKDistinct_Visible
+    - TestLengthOfLongestSubstringKDistinct_Hidden
+
+hints:
+  - Use a hash map `map[byte]int` to keep track of the frequency of characters in the current window.
+  - Slide the `right` pointer. If the map size exceeds `k`, shrink the window by moving `left` to the right, decrementing frequencies, and deleting keys with 0 count.
+
+explanation: |
+  This challenge combines the Variable Sliding Window with a frequency map.
+  The invariant is: the number of keys in the frequency map must be <= `k`.
+  Whenever this is violated, we shrink from `left` and prune the map until validity is restored.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestLengthOfLongestSubstringKDistinct_Visible(t *testing.T) {
+      tests := []struct {
+          s    string
+          k    int
+          want int
+      }{
+          {s: "eceba", k: 2, want: 3},
+          {s: "aa", k: 1, want: 2},
+      }
+
+      for _, tt := range tests {
+          got := lengthOfLongestSubstringKDistinct(tt.s, tt.k)
+          if got != tt.want {
+              t.Errorf("lengthOfLongestSubstringKDistinct(%q, %d) = %d, want %d", tt.s, tt.k, got, tt.want)
+          }
+      }
+  }
+
+  func TestLengthOfLongestSubstringKDistinct_Hidden(t *testing.T) {
+      tests := []struct {
+          s    string
+          k    int
+          want int
+      }{
+          {s: "eceba", k: 0, want: 0},
+          {s: "", k: 3, want: 0},
+          {s: "abaccc", k: 2, want: 4}, // "accc" or "baccc" (no, "accc" has 2 distinct, "baccc" has 3: 'b','a','c' which is > 2, so "accc" is length 4)
+      }
+
+      for _, tt := range tests {
+          got := lengthOfLongestSubstringKDistinct(tt.s, tt.k)
+          if got != tt.want {
+              t.Errorf("lengthOfLongestSubstringKDistinct(%q, %d) = %d, want %d", tt.s, tt.k, got, tt.want)
+          }
+      }
+  }

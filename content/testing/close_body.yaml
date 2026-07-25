@@ -1,0 +1,66 @@
+id: httptest.close_body.001
+title: Defer closing response body
+chapter: testing
+pattern_id: httptest.close_body
+difficulty: 2
+type: full_recall
+prompt: |
+    Defer closing the captured HTTP Response Body stream.
+starter: |
+    package challenge
+
+    import (
+        "net/http"
+    )
+
+    func closeResponse(res *http.Response) {
+        // godojo:start
+        // Write your solution here.
+        // godojo:end
+    }
+validation:
+    compile: true
+    gofmt: true
+    tests:
+        - TestCloseResponse
+    ast_rules:
+        - uses_defer_body_close
+hints:
+    - Use `defer` followed by a call to `res.Body.Close()`.
+explanation: |
+    Underlying network connections are pooled in Go. If you forget to close
+    the HTTP Response Body, the connection remains open, leaking resources.
+    Using `defer` guarantees closing even if a panic or early return occurs.
+test_code: |
+    package challenge
+
+    import (
+        "bytes"
+        "io"
+        "net/http"
+        "testing"
+    )
+
+    type mockBody struct {
+        io.Reader
+        closed bool
+    }
+
+    func (m *mockBody) Close() error {
+        m.closed = true
+        return nil
+    }
+
+    func TestCloseResponse(t *testing.T) {
+        body := &mockBody{Reader: bytes.NewReader([]byte{})}
+        res := &http.Response{
+            Body: body,
+        }
+
+        closeResponse(res)
+
+        // Since defer executes at the end of closeResponse, it should already be closed!
+        if !body.closed {
+            t.Error("expected response body to be closed, but it was not")
+        }
+    }

@@ -1,0 +1,85 @@
+id: leetcode.longest_substring.001
+title: Longest Substring Without Repeating Characters
+chapter: window
+pattern_id: variable-sliding-window
+difficulty: 4
+type: full_recall
+role: boss
+primary_pattern: variable-sliding-window
+
+prompt: |
+  Given a string `s`, find the length of the longest substring without repeating characters.
+
+  Example:
+  Input: `s = "abcabcbb"`
+  Output: `3`
+  Explanation: The answer is "abc", with the length of 3.
+
+starter: |
+  package challenge
+
+  func lengthOfLongestSubstring(s string) int {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return 0
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestLengthOfLongestSubstring_Visible
+    - TestLengthOfLongestSubstring_Hidden
+
+hints:
+  - Use a map or array of booleans/counts to keep track of characters inside your active window.
+  - Advance `right`. If the character at `right` is already present inside your active window, shrink the window by moving `left` and removing elements until the repeat character is pruned.
+
+explanation: |
+  The Boss challenge requires keeping a strict window invariant: all characters in the current window must be completely unique.
+  By tracking the last-seen indices or frequencies of characters, we can efficiently maintain this invariant in O(n) time.
+
+test_code: |
+  package challenge
+
+  import (
+      "testing"
+  )
+
+  func TestLengthOfLongestSubstring_Visible(t *testing.T) {
+      tests := []struct {
+          s    string
+          want int
+      }{
+          {s: "abcabcbb", want: 3},
+          {s: "bbbbb", want: 1},
+          {s: "pwwkew", want: 3},
+      }
+
+      for _, tt := range tests {
+          got := lengthOfLongestSubstring(tt.s)
+          if got != tt.want {
+              t.Errorf("lengthOfLongestSubstring(%q) = %d, want %d", tt.s, got, tt.want)
+          }
+      }
+  }
+
+  func TestLengthOfLongestSubstring_Hidden(t *testing.T) {
+      tests := []struct {
+          s    string
+          want int
+      }{
+          {s: "", want: 0},
+          {s: " ", want: 1},
+          {s: "au", want: 2},
+          {s: "dvdf", want: 3},
+      }
+
+      for _, tt := range tests {
+          got := lengthOfLongestSubstring(tt.s)
+          if got != tt.want {
+              t.Errorf("lengthOfLongestSubstring(%q) = %d, want %d", tt.s, got, tt.want)
+          }
+      }
+  }

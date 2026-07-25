@@ -1,0 +1,86 @@
+id: leetcode.group_anagrams.001
+title: Group Anagrams
+chapter: arrays
+pattern_id: arrays-and-hashing
+difficulty: 4
+type: full_recall
+role: boss
+primary_pattern: arrays-and-hashing
+
+prompt: |
+  Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
+
+  Example:
+  Input: `strs = ["eat", "tea", "tan", "ate", "nat", "bat"]`
+  Output: `[["bat"], ["nat", "tan"], ["ate", "eat", "tea"]]`
+
+starter: |
+  package challenge
+
+  func groupAnagrams(strs []string) [][]string {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return nil
+  }
+
+validation:
+  compile: true
+  gofmt: true
+  tests:
+    - TestGroupAnagrams_Visible
+    - TestGroupAnagrams_Hidden
+
+hints:
+  - You need a way to generate a unique hash map key for words that are anagrams.
+  - Sorting each word alphabetically, or using an array count of 26 letters `[26]int` as a key, provides the perfect anagram signature.
+
+explanation: |
+  By hashing words that are anagrams to the same signature string (such as their alphabetically sorted character representation),
+  we can group them using a map `map[string][]string` in O(n * k * log k) time.
+
+test_code: |
+  package challenge
+
+  import (
+      "sort"
+      "testing"
+  )
+
+  func TestGroupAnagrams_Visible(t *testing.T) {
+      strs := []string{"eat", "tea", "tan", "ate", "nat", "bat"}
+      got := groupAnagrams(strs)
+
+      if len(got) != 3 {
+          t.Fatalf("expected 3 groups, got %d", len(got))
+      }
+
+      // Verify that "bat" is isolated and "nat","tan" are grouped
+      foundBat := false
+      for _, grp := range got {
+          sort.Strings(grp)
+          if len(grp) == 1 && grp[0] == "bat" {
+              foundBat = true
+          }
+      }
+      if !foundBat {
+          t.Error("expected bat to be in its own group of size 1")
+      }
+  }
+
+  func TestGroupAnagrams_Hidden(t *testing.T) {
+      tests := []struct {
+          strs []string
+          want int
+      }{
+          {strs: []string{""}, want: 1},
+          {strs: []string{"a"}, want: 1},
+      }
+
+      for _, tt := range tests {
+          got := groupAnagrams(tt.strs)
+          if len(got) != tt.want {
+              t.Errorf("groupAnagrams(%v) length = %d, want %d", tt.strs, len(got), tt.want)
+          }
+      }
+  }
