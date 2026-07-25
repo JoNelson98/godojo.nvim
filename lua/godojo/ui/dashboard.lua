@@ -302,6 +302,11 @@ function M.load_and_render()
 
   -- First, query curriculum to find the active uncompleted chapter for this Dojo
   godojo.call_engine("curriculum", { chapter = state.active_dojo }, function(err, resp)
+    if err then
+      M.render(nil, "Failed: " .. tostring(err), "Error")
+      return
+    end
+
     local active_chapter_title = "net/http fundamentals"
     if state.active_dojo == "leetcode" then
       active_chapter_title = "Arrays & Hashing"
@@ -318,6 +323,11 @@ function M.load_and_render()
 
     -- Next, query statistics and render
     godojo.call_engine("stats", {}, function(err2, resp2)
+      if err2 then
+        M.render(nil, "Failed: " .. tostring(err2), active_chapter_title)
+        return
+      end
+
       if resp2 and resp2.status == "ok" and resp2.stats then
         M.render(resp2.stats, "Connected successfully", active_chapter_title)
       else
