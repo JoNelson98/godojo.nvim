@@ -28,6 +28,17 @@ function M.get_bin_path()
   return "godojo"
 end
 
+-- Resolves the absolute path to the static content/ directory of the plugin.
+function M.get_content_dir()
+  local source = debug.getinfo(1).source
+  if source:sub(1, 1) == "@" then
+    local current_file = source:sub(2)
+    local root = vim.fs.dirname(vim.fs.dirname(vim.fs.dirname(current_file)))
+    return root .. "/content"
+  end
+  return "./content"
+end
+
 -- Asynchronously communicates with the Go engine using JSON.
 -- @param action string: the engine action to perform (e.g., "ping")
 -- @param payload table: any additional keys to send in the JSON payload
@@ -41,7 +52,12 @@ function M.call_engine(action, payload, callback)
     return
   end
 
-  local req = vim.tbl_deep_extend("force", { action = action }, payload or {})
+  -- Automatically bundle the absolute content directory so the engine is fully CWD-independent!
+  local req = vim.tbl_deep_extend("force", { 
+    action = action,
+    content_dir = M.get_content_dir()
+  }, payload or {})
+
   local ok, req_json = pcall(vim.json.encode, req)
   if not ok then
     vim.schedule(function()

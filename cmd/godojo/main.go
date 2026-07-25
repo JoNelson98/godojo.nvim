@@ -23,6 +23,7 @@ type Request struct {
 	Chapter     string `json:"chapter,omitempty"`
 	HintsUsed   int    `json:"hints_used,omitempty"`
 	DurationMs  int64  `json:"duration_ms,omitempty"`
+	ContentDir  string `json:"content_dir,omitempty"` // Absolute path to the content/ folder passed by Lua
 }
 
 // Response defines the standard schema for outgoing responses to Lua.
@@ -80,6 +81,12 @@ func run() error {
 		return fmt.Errorf("failed to decode request JSON: %w", err)
 	}
 
+	// Fallback to "./content" if not provided by Lua (for tests / backward compatibility)
+	contentDir := req.ContentDir
+	if contentDir == "" {
+		contentDir = "./content"
+	}
+
 	var resp Response
 
 	switch req.Action {
@@ -89,7 +96,7 @@ func run() error {
 			Message: "pong",
 		}
 	case "next_challenge":
-		c, err := challenge.LoadFile("./content/json/decode_request.yaml")
+		c, err := challenge.LoadFile(filepath.Join(contentDir, "json/decode_request.yaml"))
 		if err != nil {
 			resp = Response{
 				Status: "error",
@@ -102,7 +109,7 @@ func run() error {
 			}
 		}
 	case "grade":
-		c, err := challenge.FindByID("./content", req.ChallengeID)
+		c, err := challenge.FindByID(contentDir, req.ChallengeID)
 		if err != nil {
 			resp = Response{
 				Status: "error",
@@ -160,7 +167,7 @@ func run() error {
 			}
 		} else {
 			defer db.Close()
-			sched := scheduler.New(db, "./content")
+			sched := scheduler.New(db, contentDir)
 			queue, err := sched.BuildQueue(req.Mode, req.Chapter)
 			if err != nil {
 				resp = Response{
@@ -183,7 +190,7 @@ func run() error {
 			}
 		} else {
 			defer db.Close()
-			curric, err := db.QueryCurriculum("./content", req.Chapter)
+			curric, err := db.QueryCurriculum(contentDir, req.Chapter)
 			if err != nil {
 				resp = Response{
 					Status: "error",
@@ -197,7 +204,7 @@ func run() error {
 			}
 		}
 	case "patterns":
-		cards, err := pattern.LoadAll("./content/patterns")
+		cards, err := pattern.LoadAll(filepath.Join(contentDir, "patterns"))
 		if err != nil {
 			resp = Response{
 				Status: "error",
@@ -232,7 +239,7 @@ func run() error {
 			}
 		} else {
 			defer db.Close()
-			sched := scheduler.New(db, "./content")
+			sched := scheduler.New(db, contentDir)
 			queue, err := sched.BuildQueue("list", req.Chapter)
 			if err != nil {
 				resp = Response{
