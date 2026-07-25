@@ -1,182 +1,216 @@
-# godojo.nvim
+# 🥷 GoDojo.nvim (v0.1)
 
-A gamified, bite-sized training environment inside Neovim for memorizing Go syntax, idioms, standard packages, and HTTP web patterns. Built specifically for active recall and ADHD-friendly development sessions.
+A gamified, active-recall training environment inside Neovim for drilling **Go Syntax, Web HTTP Handlers, JSON DTOs, and LeetCode DSA Patterns**.
 
-## 🚀 Product Overview
-
-`godojo.nvim` helps you drill Go HTTP patterns until they are coded in your muscle memory. Instead of watching lectures or answering multiple-choice questions, you repeatedly type, repair, complete, and reconstruct real Go code.
-
-### The Learning Loop
-
-1. **Read Objective**: Read a short, highly focused objective.
-2. **Type Code**: Write 1 to 8 lines of Go in a standard file-backed editor split.
-3. **Run Validation**: Press `<CR>` to trigger formatting, parsing (AST inspection), compilation, and testing.
-4. **Get Feedback**: Receive precise feedback pointing to the exact line/column with virtual text annotations.
-5. **Repeat & Solidify**: Strengthen patterns over time with our built-in spaced repetition scheduler.
+GoDojo doesn't teach through passive reading. It forces you to write real Go code, formatting, compiling, and running sandboxed tests natively inside Neovim while enforcing structural best practices using **Go AST parsing** and gamifying your memory consolidation using a local **SQLite Spaced Repetition engine**.
 
 ---
 
-## 🎨 UI & Layout Mockups
+## 🚀 Key Features
 
-### 1. Dashboard (`:GoDojo`)
-A full-tab interactive screen displaying your progress, mastery, and pending reviews.
+* **Dual Learning Dojos**: 
+  * **HTTP Backend Dojo**: Master standard library HTTP handler signatures, redirection, custom JSON decoders, header validation, and `httptest` suites.
+  * **LeetCode DSA Dojo**: Drill core Data Structures & Algorithms patterns in Go across **Arrays & Hashing**, **Two Pointers**, and **Sliding Window** tracks.
+* **Searchable Book of Patterns (`<leader>db` / `:GoDojo book`)**: Search and open beautifully structured, syntax-colored cards explaining recognition clues, core invariants, complexes, common mistakes, and compilable generic Go templates for key patterns.
+* **Progressive Disclosure Overlay (`<leader>dp` / `:GoDojo overlay`)**: Toggle a floating panel while solving a problem to show recognition clues and invariants, press `<Tab>` to reveal the Go skeleton, or hit `h` for progressive hints.
+* **Double-Pane Test Console**: Displays formatting warnings, real compiler warnings, Go test-suite logs, and Go AST code verifications side-by-side with color-coded layouts.
+* **SQLite Spaced Repetition**: Schedules reviews exponentially (`1d -> 3d -> 7d -> 14d -> 30d`) on clean recalls, decays mastery score by 50% on failures, and tracks weak spots dynamically.
+
+---
+
+## 🎨 Interactive Dashboards
+
+### Main Dashboard (`:GoDojo`)
+
+Switches dynamically between tracks with the **`d` key**:
 
 ```text
 ================================================================================
                                  GO DOJO (v0.1)                                 
 ================================================================================
 
-  Path              :  HTTP Backend Development
-  Current Chapter   :  Chapter 6: JSON APIs
+  Dojo              :  LeetCode DSA Dojo
+  Current Chapter   :  Sliding Window
   Session Estimate  :  7 minutes
-  Reviews Due       :  4 challenges
-  New Patterns      :  1 (json.decode_request)
-  Stable Mastery    :  [████████░░░░░░░░░░░░] 38%
+  Reviews Due       :  2 challenges
+  New Patterns      :  1 (variable-sliding-window)
+  Stable Mastery    :  [████████░░░░░░░░░░░░] 40%
 
   Weak Patterns
   ---------------
-  • pointer.receiver         - 20% mastery (Requires 3 more clean recalls)
-  ...
-```
+  • arrays-and-hashing
+  • two-pointers
 
-### 2. Challenge Workspace
-Dedicated tab page with a 38% description split on the left and a 62% file-backed Go buffer on the right.
+  Recent Progress
+  ----------------
+  • Total recorded attempts: 41
 
-```text
-========================================|=======================================
- MISSION 3/8 · JSON DECODING            | package challenge
-----------------------------            | 
- Decode the request body into input.    | func decodeRequest(r *http.Request) (
-                                        |     CreateCompanyRequest, error,
- Target Pattern : json.Decoder          | ) {
- ...                                    |     // godojo:start
-                                        |     // Write your solution here.
-                                        |     // godojo:end
-========================================|=======================================
+--------------------------------------------------------------------------------
+  [Enter] Start Training Session      [c] Select & View Learning Paths
+  [r]     Reviews Only (due items)    [s] View Statistics Popup
+  [w]     Weak-Pattern Training       [d] Switch Active Dojo
+  [p]     Select & Load Problem       [q] Exit GoDojo
+================================================================================
+  Go Engine Connection: Connected successfully
+================================================================================
 ```
 
 ---
 
-## 📋 Requirements
+## 📦 Installation & Setup
 
-- **Neovim** >= 0.10.0 (supporting `vim.system`)
-- **Go** >= 1.22 (to compile the training engine)
-- **nui.nvim** (for layout splits and test console overlays)
+GoDojo relies on a compiled Go backend. Setup is incredibly simple using **Lazy.nvim** with compile-on-install.
 
----
+### Prerequisites
+* Go compiler (1.20+) installed on your machine (`go version`)
+* SQLite development headers (native on macOS, `sqlite3` on Linux/WSL)
+* Neovim (0.9.0+)
 
-## 📦 Installation
+### Lazy.nvim Plugin Configuration
 
-### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
-
-```lua
-{
-  "godojo/godojo.nvim",
-  dependencies = {
-    "MunifTanjim/nui.nvim",
-  },
-  build = "make build",
-  config = function()
-    require("godojo").setup({
-      session = {
-        mode = "standard",
-        target_minutes = 8,
-      }
-    })
-  end,
-}
-```
-
-### Development Setup
-
-Clone the repository locally:
-
-```bash
-git clone https://github.com/godojo/godojo.nvim.git ~/code/godojo.nvim
-cd ~/code/godojo.nvim
-make build
-```
-
-Then configure lazy to point to your local directory:
+Have your friend add this block to their Neovim plugin specs:
 
 ```lua
-{
-  dir = "~/code/godojo.nvim",
-  dependencies = {
-    "MunifTanjim/nui.nvim",
+return {
+  "JoNelson98/godojo.nvim",
+  dependencies = { 
+    "MunifTanjim/nui.nvim" -- Required for Dashboard & Split windows
+  },
+  -- Automatically builds/compiles the Go background engine upon install and updates!
+  build = "make build", 
+  keys = {
+    { "<leader>gd", "<cmd>GoDojo<cr>", desc = "Open GoDojo Dashboard" }
   },
   config = function()
-    require("godojo").setup()
+    -- Optional: your configuration overrides go here
   end,
 }
 ```
 
 ---
 
-## 🛠️ Commands & Mappings
+## 🎹 Suggested Keymaps
 
-### Neovim Commands
-
-| Command | Action |
-| :--- | :--- |
-| `:GoDojo` | Opens the main menu/dashboard tab |
-| `:GoDojo start` | Begins a new training session |
-| `:GoDojo run` | Opens the test console for the current challenge |
-| `:GoDojo reset` | Resets the editable solution code blocks |
-| `:GoDojo exit` | Exits GoDojo and cleans up all active buffers |
-
-### Default Mappings (Dashboard)
-
-- `<CR>`: Start training / Test connection
-- `q`: Close/Exit GoDojo
-
-### Default Mappings (Workspace Editor)
-
-- `<CR>`: Submit/validate code
-- `<C-h>`: Toggle hint
-- `<C-t>`: Toggle test console overlay
+| Keymap | Location | Action |
+|:---:|:---:|:---|
+| `<leader>gd` | Normal mode | Toggle main GoDojo Dashboard |
+| `<CR>` | Dashboard | Start Scheduled Training Session |
+| `c` | Dashboard | View dynamic progress bars & launch targeted chapters |
+| `p` | Dashboard | Open a searchable fuzzy picker to run any individual problem |
+| `d` | Dashboard | Swap Dojo tracks (HTTP Backend ↔ LeetCode DSA) |
+| `r` | Dashboard | Reviews Only mode (pulls due spaced-repetition cards) |
+| `w` | Dashboard | Drill your lowest-mastered Weak Patterns |
+| `s` | Dashboard | Open Learner Statistics overlay |
+| **`q`** | Dashboard | Exit GoDojo & restore active Neovim workspaces |
+| **`<CR>`** | Editor Workspace | Submit current solution & compile/grade |
+| **`q`** | Editor Workspace | Save code & return directly to Home Dashboard |
+| **`<C-h>`** | Editor Workspace | Request problem hints |
+| **`<C-r>`** | Editor Workspace | Reset editable code section back to starter |
+| **`<leader>db`** | Editor Workspace | Search and browse the **Book of Patterns** |
+| **`<leader>dp`** | Editor Workspace | Open the **Progressive Disclosure Pattern Overlay** |
 
 ---
 
-## ⚙️ Configuration
+## 🛠️ Content Customization Guide
 
-```lua
-require("godojo").setup({
-  session = {
-    mode = "standard", -- "quick", "standard", "hyperfocus"
-    target_minutes = 8,
-    new_patterns_per_session = 1,
-  },
-  ui = {
-    border = "rounded",
-    show_timer = false,
-    show_progress = true,
-  },
-  grading = {
-    timeout_ms = 10000,
+GoDojo is fully data-driven. You can add new chapters, challenges, or pattern cards easily by adding `.yaml` files without recompiling or writing any Go code!
+
+### 1. How to add a Custom Coding Challenge
+Create a new file under `content/leetcode/arrays/my-problem.yaml` using this schema:
+
+```yaml
+id: leetcode.my_problem.001          # Must be globally unique
+title: My Custom DSA Challenge       # Displays as active mission title
+chapter: arrays                      # Path/Category matching your Dojo
+pattern_id: arrays-and-hashing       # Primary pattern ID from cards
+difficulty: 2                        # 1 to 5 stars
+type: full_recall                    # full_recall, bug_repair, etc.
+role: lesson                         # "lesson" or "boss" (boss locks until lessons pass)
+primary_pattern: arrays-and-hashing
+
+prompt: |
+  Write a function to search an element in O(1) time.
+  (You can use full multiline Markdown here!)
+
+starter: |
+  package challenge
+
+  func myCustomSearch(nums []int, target int) bool {
+      // godojo:start
+      // Write your solution here.
+      // godojo:end
+      return false
   }
-})
+
+validation:
+  compile: true                      # Formats with gofmt and compiles
+  gofmt: true
+  tests:                             # Lists test function names in test_code
+    - TestMyCustomSearch_Visible
+
+hints:
+  - "Quote your hints to prevent YAML parsing crashes."
+  - "Always store values in map keys for O(1) hashing lookups."
+
+explanation: |
+  Describe the optimal syntax or design pattern details here for ADHD learners.
+
+test_code: |
+  package challenge
+
+  import "testing"
+
+  func TestMyCustomSearch_Visible(t *testing.T) {
+      if !myCustomSearch([]int{1, 2, 3}, 2) {
+          t.Error("Expected true, got false")
+      }
+  }
 ```
 
----
+### 2. How to add a Custom Pattern Card
+Create a new YAML file under `content/patterns/my-pattern.yaml`:
 
-## 🧑‍💻 How to Run Tests
+```yaml
+id: my-pattern                       # Must match the pattern_id of challenges
+name: Custom Backtracking            # Pattern Title
+chapter: backtracking                # Learning track chapter
+solves: |
+  Enumerate all valid path combinations.
+clues:
+  - Choosing elements, checking validity, and undoing choices.
+invariant: |
+  The backtrack recursive branch preserves previous step decisions.
+skeleton: |
+  // Compilable Go skeleton template
+  func backtrackTemplate(candidates []int) {
+      var backtrack func(start int, path []int)
+      backtrack = func(start int, path []int) {
+          if conditionMet() {
+              return
+          }
+          for i := start; i < len(candidates); i++ {
+              // Choose element
+              backtrack(i + 1, append(path, candidates[i]))
+              // Undo choice (implicit on return)
+          }
+      }
+      backtrack(0, []int{})
+  }
+time_complexity: O(2^n)
+space_complexity: O(n)
+mistakes:
+  - Forgetting base case causing stack overflows.
+related:
+  - dfs-traversal
+```
 
-### Go Engine Tests
-
+### 3. Validating your changes
+Run the built-in validator command to verify that all directories, challenges, tests, and syntax rules are correct:
 ```bash
-make test
+./bin/godojo validate-content
 ```
 
 ---
 
-## 🗺️ Roadmap
-
-- [x] **Milestone 1**: Repository Bootstrap & Ping Protocol
-- [ ] **Milestone 2**: Challenge Loading & Validation YAML Schema
-- [ ] **Milestone 3**: Dual Split Scratch buffer Workspace
-- [ ] **Milestone 4**: AST Validation Engine & test compiler
-- [ ] **Milestone 5**: SQLite Progress Tracking
-- [ ] **Milestone 6**: Spaced Review Scheduler & Queue
-- [ ] **Milestone 7**: Curated 30 challenge curriculum
-- [ ] **Milestone 8**: POST `/companies` Boss Mission
+## 🥷 Developed locally with ❤️
+Enjoy training inside Neovim. Keep drilling, and make Go your native muscle memory!
