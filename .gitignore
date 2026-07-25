@@ -1,0 +1,17 @@
+# Ignore local compiled binaries
+bin/
+
+# Ignore local SQLite database
+godojo.db
+~/.godojo/
+
+# Ignore local temporary/build assets
+release/
+dist/
+*.exe
+*.exe.copy
+*.test
+*.prof
+
+# Ignore macOS system files
+.DS_Store
