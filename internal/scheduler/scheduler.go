@@ -68,12 +68,23 @@ func (s *Scheduler) BuildQueue(mode string, requestedChapter string) ([]*challen
 	// Sort curriculum chronologically
 	SortChallenges(allChallenges)
 
-	// Filter challenges by requested chapter if specified
+	// Filter challenges by requested chapter or Dojo track if specified
 	if requestedChapter != "" && requestedChapter != "all" {
 		var filtered []*challenge.Challenge
 		for _, c := range allChallenges {
-			if c.Chapter == requestedChapter {
-				filtered = append(filtered, c)
+			isLeetcode := c.Chapter == "arrays" || c.Chapter == "pointers" || c.Chapter == "window"
+			if requestedChapter == "leetcode" {
+				if isLeetcode {
+					filtered = append(filtered, c)
+				}
+			} else if requestedChapter == "http" {
+				if !isLeetcode {
+					filtered = append(filtered, c)
+				}
+			} else {
+				if c.Chapter == requestedChapter {
+					filtered = append(filtered, c)
+				}
 			}
 		}
 		allChallenges = filtered
